@@ -14,36 +14,6 @@ async def on_ready():
     print(bot.user.id)
     print('------')
 
-# Basic Functions
-
-@bot.command()
-async def add(left : int, right : int):
-    """Adds two numbers together."""
-    await bot.say(left + right)
-
-@bot.command()
-async def roll(dice : str):
-    """Rolls a dice in NdN format."""
-    try:
-        rolls, limit = map(int, dice.split('d'))
-    except Exception:
-        await bot.say('Format has to be in NdN!')
-        return
-
-    result = ', '.join(str(random.randint(1, limit)) for r in range(rolls))
-    await bot.say(result)
-
-@bot.command(description='For when you wanna settle the score some other way')
-async def choose(*choices : str):
-    """Chooses between multiple choices."""
-    await bot.say(random.choice(choices))
-
-@bot.command()
-async def repeat(times : int, content='repeating...'):
-    """Repeats a message multiple times."""
-    for i in range(times):
-        await bot.say(content)
-        
 # Fun Stuff!
 
 @bot.group(pass_context=True)
@@ -80,14 +50,54 @@ async def EXPLODE():
 # None-priveleged Utilities
 
 @bot.command()
+async def add(left : int, right : int):
+    """Adds two numbers together."""
+    await bot.say(left + right)
+
+@bot.command()
+async def roll(dice : str):
+    """Rolls a dice in NdN format."""
+    try:
+        rolls, limit = map(int, dice.split('d'))
+    except Exception:
+        await bot.say('Format has to be in NdN!')
+        return
+
+    result = ', '.join(str(random.randint(1, limit)) for r in range(rolls))
+    await bot.say(result)
+
+@bot.command(description='For when you wanna settle the score some other way')
+async def choose(*choices : str):
+    """Chooses between multiple choices."""
+    await bot.say(random.choice(choices))
+
+@bot.command()
+async def repeat(times : int, content='repeating...'):
+    """Repeats a message multiple times."""
+    for i in range(times):
+        await bot.say(content)
+
+@bot.command()
 async def joined(member : discord.Member):
     """Says when a member joined."""
     await bot.say('{0.name} joined in {0.joined_at}'.format(member))
 
 # Priveleged Utilities
 
+@bot.command()
+@commands.has_any_role('@staff', '@swashbucklers')
+async def role_test():
+    '''RESTRICTED - Check if your role grants you advanced bot priveledges.'''
+    await bot.say('You have the correct role.')
+    
+@bot.command()
+@commands.has_any_role('@staff', '@swashbucklers')
+async def say(channel, message):
+    '''RESTRICTED - Say anything via the bot to any channel.'''
+    if channel == "bot-testing":
+        await bot.say(message)
 
 
 # Final Run (Don't put code after this!)
 
-bot.run('token')
+bot.run('MzQ4MTczMjI1MTg5OTY1ODM1.DHjHrQ.bzmQ3l5UV87a5S-Y9dHtVRbURXs')
