@@ -90,4 +90,4 @@ async def joined(member : discord.Member):
 
 # Final Run (Don't put code after this!)
 
-bot.run('MzQ4MTczMjI1MTg5OTY1ODM1.DHjHrQ.bzmQ3l5UV87a5S-Y9dHtVRbURXs')
+bot.run('token')
