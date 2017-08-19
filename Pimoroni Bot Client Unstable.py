@@ -6,7 +6,7 @@ import logging
 # ---Setup (Background Stuff)---
 
 
-logger = logging.getLogger('log')
+logger = logging.getLogger('unstable')
 logger.setLevel(logging.INFO)
 handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
 handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
@@ -84,6 +84,7 @@ Restricted Commands (Non-Member Users):
         msg = message.content
         words = msg.split()
         words.remove("?say")
+        sendmsg = []
         for word in words:
             if word == "#general":
                 chan = "general"
@@ -111,5 +112,6 @@ async def on_ready():
     print(client.user.id)
     print('------')
 
-client.run('MzQ4MTczMjI1MTg5OTY1ODM1.DHjHrQ.bzmQ3l5UV87a5S-Y9dHtVRbURXs')
+client.run('MzQ4NTIxMzkyNzIwODM4NjY5.DHoKnA.vQLuh8rboSBQiGpxjI8jdXZxcKE')
+
 
