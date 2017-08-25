@@ -1,6 +1,7 @@
 import discord
 import random
 import string
+import asyncio
 
 
 # ---Setup (Background Stuff)---
@@ -26,12 +27,11 @@ client = discord.Client()
 # ---Documentation---
 
 
-version = "1.5"
+version = "1.6"
 
 changelog = """```
 Version {} Changelog:
-- Added \"Donald Trump\" and \"Brexit\" to the profanity list.
-- Fixed the bot so that it doesn't spam the channel with notification messages.
+- Changed the on_member_join function so that the bot deletes it's own welcoming messages to prevent spam.
 ```""".format(version)
 
 
@@ -55,6 +55,9 @@ async def on_message(message):
             bot_message = await client.send_message(message.channel, "Please refrain from using profanity @{}.".format(author))
             await asyncio.sleep(5)
             await client.delete_message(bot_message)
+            
+    if not message.content[0] == "?":
+        return
     
     if message.content.startswith('?help'):
         msg = message.content
@@ -307,7 +310,9 @@ Says a desired message into a channel via Pimoroni Bot.
     
 @client.event
 async def on_member_join(member):
-    await client.send_message(discord.Object(general), "Welcome @{0} to the Officially Unofficial Pimoroni Discord Server!".format(member))
+    welcome = await client.send_message(discord.Object(general), "Welcome @{0} to the Officially Unofficial Pimoroni Discord Server!".format(member))
+    await asyncio.sleep(5)
+    await client.delete_message(welcome)
 
 
 # ------------Final Run (Don't put code after this!)------------
@@ -330,4 +335,6 @@ async def on_ready():
         
 
 client.run(token)
+
+
 
