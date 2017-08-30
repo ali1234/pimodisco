@@ -27,11 +27,13 @@ client = discord.Client()
 # ---Documentation---
 
 
-version = "1.6"
+version = "1.7"
 
 changelog = """```
 Version {} Changelog:
-- Changed the on_member_join function so that the bot deletes it's own welcoming messages to prevent spam.
+- Added the choose function. No more indecision!
+
+Also a special mention to @andy#5649 for making my Jazz dreams come true.
 ```""".format(version)
 
 
@@ -80,6 +82,7 @@ Basic Commands:
 - ?hello: Says hello! A great way to find out your four digit user code. Woohoo for justification!
 - ?goodbye: Does the opposite of hello. How suprising!
 - ?roll: Rolls a standard 6 sided die!
+- ?choose [option1] [option2]: Chooses between two options!
 - ?add [number1] [number2]: Adds two numbers together!
 - ?link [page]: Gives you a link to a Pimoroni page, be it Twitter, YouTube or even just the shop!
 - ?version: Gives you the version number of the Pimoroni Bot currently running.
@@ -119,6 +122,13 @@ Says goodbye to you!
 The \"?roll\" command:
 usage - ?roll
 Rolls a standard 6 sided die and says the resulting number!
+```""")
+            elif word == "choose":
+                await client.send_message(message.channel, """```
+The \"?choose\" command:
+usage - ?choose
+[option1] and [option2] = Anything that you can't decide between!
+Pseudo-randomly chooses between two options.
 ```""")
             elif word == "add":
                 await client.send_message(message.channel, """```
@@ -191,6 +201,19 @@ Says a desired message into a channel via Pimoroni Bot.
     elif message.content.startswith("?roll"):
         roll = str(random.randint(1, 6))
         await client.send_message(message.channel, "{} rolled!".format(roll))
+        
+    #CHOOSE
+    elif message.content.startswith("?choose"):
+        num = random.randint(1, 2)
+        msg = message.content
+        cwords = msg.split()
+        cwords.remove("?choose")
+        print(cwords)
+        print(num)
+        if num == 1:
+            await client.send_message(message.channel, "Definitely {}".format(cwords[0]))
+        elif num == 2:
+            await client.send_message(message.channel, "Definitely {}".format(cwords[1]))
         
     
     #ADD
@@ -335,6 +358,7 @@ async def on_ready():
         
 
 client.run(token)
+
 
 
 
