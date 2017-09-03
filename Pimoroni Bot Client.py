@@ -2,6 +2,7 @@ import discord
 import random
 import string
 import asyncio
+import time
 
 
 # ---Setup (Background Stuff)---
@@ -27,15 +28,15 @@ client = discord.Client()
 # ---Documentation---
 
 
-version = "1.7"
+version = "2.0.2"
 
 changelog = """```
 Version {} Changelog:
-- Added the choose function. No more indecision!
 
-Also a special mention to @andy#5649 for making my Jazz dreams come true.
+- Fixed the anti-spam filter. Again.
 ```""".format(version)
 
+history = {}
 
 @client.event
 async def on_message(message):
@@ -44,8 +45,36 @@ async def on_message(message):
     
     author = message.author
     
+    msg_time = time.time()
+    spam_limit = msg_time - 2
+    
     msg = message.content
+    channel = message.channel
     words = msg.split()
+    
+    history_item = history.get(str(message.author))
+    history[str(message.author)] = msg_time
+    print(history_item)
+    print(msg_time)
+    try:
+        history_item = int(history_item)
+    except:
+        print("Nonetype in message history...")
+    if history_item == None:
+        print("Adding history event...")
+        history[str(message.author)] = msg_time
+    else:
+        if history_item >= spam_limit:
+            await client.delete_message(message)
+            bot_message = await client.send_message(message.channel, "{}, please do not send spam!".format(author.mention))
+            await asyncio.sleep(5)
+            await client.delete_message(bot_message)
+            message = None
+            history[str(message.author)] = None
+            
+    
+    # Profanity Filter
+    
     filter = ("brexit", "trump", "anal", "anus", "arse", "ass", "ballsack", "balls", "bastard", "bitch", "biatch", "bloody", "blowjob",  "bollock", "bollok", "boner", "boob", "bugger", "bum", "butt", "buttplug", "clitoris", "cock", "coon", "crap", "cunt", "damn", "dick", "dildo", "dyke", "fag", "feck", "fellate", "fellatio", "felching", "fuck", "fudgepacker", "flange", "goddamn", "hell", "homo", "jerk", "jizz", "knobend", "labia", "lmao", "lmfao", "muff", "nigger", "nigga", "omg", "penis", "piss", "poop", "prick", "pube", "pussy", "queer", "scrotum", "sex", "shit", "sh1t", "slut", "smegma", "spunk", "tit", "tosser", "turd", "twat", "vagina", "wank", "whore", "wtf")
     for word in words:
         word = word.lower()
@@ -54,12 +83,11 @@ async def on_message(message):
         
         if word in filter:
             await client.delete_message(message)
-            bot_message = await client.send_message(message.channel, "Please refrain from using profanity @{}.".format(author))
+            bot_message = await client.send_message(message.channel, "Please refrain from using profanity {}.".format(author.mention))
             await asyncio.sleep(5)
             await client.delete_message(bot_message)
             
-    if not message.content[0] == "?":
-        return
+    # End of Filter
     
     if message.content.startswith('?help'):
         msg = message.content
@@ -81,6 +109,7 @@ Basic Commands:
 - ?help [command]: Displays this help sheet. Add a command in there to get more information specifically for it!
 - ?hello: Says hello! A great way to find out your four digit user code. Woohoo for justification!
 - ?goodbye: Does the opposite of hello. How suprising!
+- ?version: States the bot's current version.
 - ?roll: Rolls a standard 6 sided die!
 - ?choose [option1] [option2]: Chooses between two options!
 - ?add [number1] [number2]: Adds two numbers together!
@@ -116,6 +145,12 @@ Says hello back to you!
 The \"?goodbye\" command:
 usage - ?goodbye
 Says goodbye to you!
+```""")
+            elif word == "version":
+                await client.send_message(message.channel, """```
+The \"?version\" command:
+usage - ?version
+Says the currently active version of the bot.
 ```""")
             elif word == "roll":
                 await client.send_message(message.channel, """```
@@ -191,11 +226,15 @@ Says a desired message into a channel via Pimoroni Bot.
 
     #HELLO
     elif message.content.startswith('?hello'):
-        await client.send_message(message.channel, "Greetings {}!".format(author))
+        await client.send_message(message.channel, "Greetings {}!".format(author.mention))
         
     #GOODBYE
     elif message.content.startswith('?goodbye'):
-        await client.send_message(message.channel, "Tata {}!".format(author))
+        await client.send_message(message.channel, "Tata {}!".format(author.mention))
+        
+    #VERSION
+    elif message.content.startswith('?version'):
+        await client.send_message(message.channel, "Version {}!".format(version))
             
     #ROLL
     elif message.content.startswith("?roll"):
@@ -333,7 +372,7 @@ Says a desired message into a channel via Pimoroni Bot.
     
 @client.event
 async def on_member_join(member):
-    welcome = await client.send_message(discord.Object(general), "Welcome @{0} to the Officially Unofficial Pimoroni Discord Server!".format(member))
+    welcome = await client.send_message(discord.Object(general), "Welcome {} to the Officially Unofficial Pimoroni Discord Server!".format(member.mention))
     await asyncio.sleep(5)
     await client.delete_message(welcome)
 
@@ -358,7 +397,6 @@ async def on_ready():
         
 
 client.run(token)
-
 
 
 
