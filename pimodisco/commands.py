@@ -1,4 +1,5 @@
 import random
+import ast
 
 from pimodisco import version
 
@@ -83,7 +84,7 @@ async def roll(client, message):
 async def choose(client, message):
     """Choose something from a list of options.
 
-    Usage: choose <option>, [<option>, ...]
+    Usage: choose <option> [<option> ...]
     """
     recommendations = ['Try', 'Go with', 'Maybe', 'Definitely', 'Consider', 'I asked @Gadgetoid and he said']
     cwords = message.content.split()[1:]
@@ -91,6 +92,17 @@ async def choose(client, message):
         await client.send_message(message.channel, '{} {}.'.format(random.choice(recommendations), random.choice(cwords)))
     else:
         await client.send_message(message.channel, 'What are the options?')
+
+@command
+async def add(client, message):
+    """Add a list of numbers.
+
+    Usage: add [<number> ...]
+    """
+    messages = ['Hmmm. {}.', 'Easy. {}.', 'That would be {}.', 'That equals {}.', "That's {}. Quick maths."]
+    # ast.literal_eval is safe for unknown inputs
+    answer = sum((ast.literal_eval(n) for n in message.content.split()[1:]))
+    await client.send_message(message.channel, random.choice(messages).format(answer))
 
 @command
 async def link(client, message):

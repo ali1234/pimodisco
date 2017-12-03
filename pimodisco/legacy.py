@@ -213,35 +213,6 @@ Says a desired message into a channel via Pimoroni Bot.
 
     # ---None-priveleged Commands---
 
-    # HELLO
-    elif message.content.startswith('?hello'):
-        await client.send_message(message.channel, "Greetings {}!".format(author.mention))
-
-    # GOODBYE
-    elif message.content.startswith('?goodbye'):
-        await client.send_message(message.channel, "Tata {}!".format(author.mention))
-
-    # VERSION
-    elif message.content.startswith('?version'):
-        await client.send_message(message.channel, "Version {}!".format(version))
-
-    # ROLL
-    elif message.content.startswith("?roll"):
-        roll = str(random.randint(1, 6))
-        await client.send_message(message.channel, "{} rolled!".format(roll))
-
-    # CHOOSE
-    elif message.content.startswith("?choose"):
-        num = random.randint(1, 2)
-        msg = message.content
-        cwords = msg.split()
-        cwords.remove("?choose")
-        print(cwords)
-        print(num)
-        if num == 1:
-            await client.send_message(message.channel, "Definitely {}".format(cwords[0]))
-        elif num == 2:
-            await client.send_message(message.channel, "Definitely {}".format(cwords[1]))
 
 
     # ADD
@@ -261,47 +232,7 @@ Says a desired message into a channel via Pimoroni Bot.
         await client.send_message(message.channel, "The answer is: {}".format(answer))
 
 
-    # LINK
-    elif message.content.startswith("?link"):
-        msg = message.content
-        lwords = msg.split()
-        lwords.remove("?link")
-        for word in lwords:
-            word = word.lower()
-            if word == "shop":
-                await client.send_message(message.channel,
-                                          "Here's a link to the Pimoroni shop: https://shop.pimoroni.com/")
-            elif word == "learn":
-                await client.send_message(message.channel,
-                                          "Here's a link to the Pimoroni Yarr-niversity: https://learn.pimoroni.com/")
-            elif word == "blog":
-                await client.send_message(message.channel,
-                                          "Here's a link to the Pimoroni blog: http://blog.pimoroni.com/")
-            elif word == "forum" or word == "forums":
-                await client.send_message(message.channel,
-                                          "Here's a link to the Pimoroni forums: http://forums.pimoroni.com/")
-            elif word == "twitter":
-                await client.send_message(message.channel,
-                                          "Here's a link to the Pimoroni Twitter: http://twitter.com/pimoroni")
-            elif word == "youtube":
-                await client.send_message(message.channel,
-                                          "Here's a link to the Pimoroni YouTube channel: http://youtube.com/pimoroniltd")
-            elif word == "about":
-                await client.send_message(message.channel,
-                                          "Here's a link to the Pimoroni \"about us\" page: https://shop.pimoroni.com/pages/about-us")
-            else:
-                await client.send_message(message.channel, "Unable to find Pimoroni related link!")
 
-
-    # VERSION
-    elif message.content.startswith("?version"):
-        await client.send_message(message.channel, "Version: {}".format(version))
-
-
-    # CODE
-    elif message.content.startswith("?code"):
-        await client.send_message(message.channel,
-                                  "Here's a link: https://github.com/RaspberryPicardBox/Pimoroni-Discord-Bot")
 
 
     # ---Priveleged Commands---
