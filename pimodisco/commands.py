@@ -101,8 +101,12 @@ async def add(client, message):
     """
     messages = ['Hmmm. {}.', 'Easy. {}.', 'That would be {}.', 'That equals {}.', "That's {}. Quick maths."]
     # ast.literal_eval is safe for unknown inputs
-    answer = sum((ast.literal_eval(n) for n in message.content.split()[1:]))
-    await client.send_message(message.channel, random.choice(messages).format(answer))
+    try:
+        answer = sum((ast.literal_eval(n) for n in message.content.split()[1:]))
+    except SyntaxError:
+        await client.send_message(message.channel, "Something in there isn't a number, sorry.")
+    else:
+        await client.send_message(message.channel, random.choice(messages).format(answer))
 
 @command
 async def link(client, message):
