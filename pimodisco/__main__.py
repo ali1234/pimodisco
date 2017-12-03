@@ -1,5 +1,5 @@
 import discord
-import asyncio
+import os
 
 
 from pimodisco.commands import commands, cmd_prefix
@@ -13,11 +13,13 @@ try:
 except ImportError:
     print('Product search not available.')
 
-try:
-    token = open('token.txt').read().strip()
-except Exception:
-    print('Please put Discord bot token in token.txt.')
-    exit(-1)
+token = os.environ.get('DISCORD_BOT_TOKEN')
+if not token:
+    try:
+        token = open('token.txt').read().strip()
+    except Exception:
+        print('Please put Discord bot token in token.txt or set the environment variable DISCORD_BOT_TOKEN.')
+        exit(-1)
 
 client = discord.Client()
 
