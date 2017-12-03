@@ -126,3 +126,24 @@ async def link(client, message):
 async def checkauth(client, message):
     """Test command to check whether you are authorized. (Requires authorization.)"""
     await client.send_message(message.channel, 'Congratulations, you are authorized.')
+
+@command
+@authorized
+async def say(client, message):
+    """Send a message to a channel.
+
+    Usage: say [<channel>] <message>
+    Channel is optional. It must be a channel on your current server. If not
+    specified or not found, the message will go to the current channel.
+    """
+    try:
+        (_, channel, msg) = message.content.split(maxsplit=2)
+        channel = {c.name: c for c in message.server.channels}[channel]
+    except (KeyError, ValueError):
+        channel = message.channel
+        try:
+            (_, msg) = message.content.split(maxsplit=1)
+        except ValueError:
+            msg = "What do you want me to say?"
+    finally:
+        await client.send_message(channel, msg)
