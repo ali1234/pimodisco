@@ -7,7 +7,7 @@ setup(
     license='GPLv3+',
     packages=['pimodisco'],
     install_requires=[
-        'discord'
+        'discord', 'algoliasearch'
     ],
     entry_points={
         'console_scripts': [
