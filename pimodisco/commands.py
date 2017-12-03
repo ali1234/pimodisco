@@ -42,7 +42,7 @@ The source code for the Pimoroni Bot can be found here: https://github.com/Raspb
 Commands: {}
 
 Type !help <command> for help with that command.```""".format(version,
-            '\n'.join(' - {}: {}'.format(f.__name__, f.__doc__) for f in commands.values())
+            '\n'.join(' - {}: {}'.format(f.__name__, f.__doc__) for f in sorted(commands.values(), key = lambda f: f.__name__))
         ))
 
 @command
