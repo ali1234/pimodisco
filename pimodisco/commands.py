@@ -2,6 +2,7 @@ import random
 import ast
 
 from pimodisco import version as version__
+from pimodisco import source_url
 
 cmd_prefix = '!'
 
@@ -46,7 +47,7 @@ Version {}
 
 Commands should be prefixed with '{}' and are not case sensitive.
 
-The source code for the Pimoroni Bot can be found here: https://github.com/RaspberryPicardBox/Pimoroni-Discord-Bot
+The source code for the Pimoroni Bot can be found here: {}
         
 Commands: 
 {}
@@ -54,6 +55,7 @@ Commands:
 Type {}help <command> for help with that command.```""".format(
             version__,
             cmd_prefix,
+            source_url,
             '\n'.join('{:10} {}'.format(f.__name__, f.__doc__.split('\n', 1)[0]) for f in sorted(commands.values(), key = lambda f: f.__name__)),
             cmd_prefix,
         ))
@@ -79,7 +81,7 @@ async def version(client, message):
 async def code(client, message):
     """Prints a link to the bots code."""
     await client.send_message(message.channel,
-                  "Here's a link to my source code: https://github.com/RaspberryPicardBox/Pimoroni-Discord-Bot")
+                  "Here's a link to my source code: {}".format(source_url))
 
 @command
 async def roll(client, message):
