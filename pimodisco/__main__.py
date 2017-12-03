@@ -36,9 +36,11 @@ async def on_message(message):
     elif message.content.startswith(cmd_prefix):
         parsed = message.content.split(maxsplit=1)
         try:
-            await commands[parsed[0][1:].lower()](client, message)
+            f = commands[parsed[0][1:].lower()]
         except KeyError:
             await client.send_message(message.channel, "I don't know that command. Type !help for a list of commands.")
+        else:
+            await f(client, message)
 
 @client.event
 async def on_member_join(member):
