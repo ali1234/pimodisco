@@ -130,7 +130,7 @@ async def checkauth(client, message):
 @command
 @authorized
 async def say(client, message):
-    """Send a message to a channel.
+    """Send a message to a channel. (Requires authorization.)
 
     Usage: say [<channel>] <message>
     Channel is optional. It must be a channel on your current server. If not
