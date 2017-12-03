@@ -25,12 +25,16 @@ def authorized(f):
 
 @command
 async def help(client, message):
-    """Prints help about commands. With no argument, prints general help."""
+    """Prints help about commands. With no argument, prints general help.
+
+    Usage: help [<command>]
+       - command: command you want help with.
+    """
     words = message.content.split()
     if len(words) > 1:
         if words[1] in commands:
             f = commands[words[1]]
-            await client.send_message(message.channel, '```{}```'.format(' '.join([f.__name__, f.__doc__])))
+            await client.send_message(message.channel, '```{}: {}```'.format(f.__name__, f.__doc__))
         else:
             await client.send_message(message.channel, "I don't know that command. Type !help for a list of commands.")
     else:
@@ -39,10 +43,11 @@ Version {}
 
 The source code for the Pimoroni Bot can be found here: https://github.com/RaspberryPicardBox/Pimoroni-Discord-Bot
         
-Commands: {}
+Commands: 
+{}
 
 Type !help <command> for help with that command.```""".format(version,
-            '\n'.join(' - {}: {}'.format(f.__name__, f.__doc__) for f in sorted(commands.values(), key = lambda f: f.__name__))
+            '\n'.join('{:10} {}'.format(f.__name__, f.__doc__.split('\n', 1)[0]) for f in sorted(commands.values(), key = lambda f: f.__name__))
         ))
 
 @command
@@ -76,7 +81,10 @@ async def roll(client, message):
 
 @command
 async def choose(client, message):
-    """Choose something from a list of options."""
+    """Choose something from a list of options.
+
+    Usage: choose <option>, [<option>, ...]
+    """
     recommendations = ['Try', 'Go with', 'Maybe', 'Definitely', 'Consider', 'I asked @Gadgetoid and he said']
     cwords = message.content.split()[1:]
     if len(cwords) > 0:
@@ -86,7 +94,11 @@ async def choose(client, message):
 
 @command
 async def link(client, message):
-    """Get links to Pimoroni resources."""
+    """Get links to Pimoroni resources.
+
+    Usage: link <thing>
+       - thing: the thing you want the link for.
+    """
     links = {
         'shop': ('Pimoroni shop', 'https://shop.pimoroni.com/'),
         'learn': ('Pimoroni Yarr-niversity', 'https://learn.pimoroni.com/'),
