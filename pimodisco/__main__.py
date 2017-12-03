@@ -19,7 +19,7 @@ async def on_message(message):
             await commands[parsed[0][1:].lower()](client, message)
         except KeyError:
             await client.send_message(message.channel, "I don't know that command. Type !help for a list of commands.")
-    elif message.content.startswith('?'):
+    else:
         await legacy(client, message)
 
 
