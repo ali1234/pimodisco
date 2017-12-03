@@ -4,8 +4,12 @@ import string
 from collections import defaultdict
 
 history = defaultdict(int)
+last_warning = 0
 
 async def filter(client, message):
+    global last_warning
+    global history
+
     msg_time = time.time()
     spam_limit = msg_time - 2
 
@@ -13,14 +17,16 @@ async def filter(client, message):
 
     if history[str(message.author)] >= spam_limit:
         await client.delete_message(message)
-        bot_message = await client.send_message(message.channel,
+        if msg_time - last_warning > 5:
+            bot_message = await client.send_message(message.channel,
                                                 "{}, please do not send spam!".format(message.author.mention))
-        await asyncio.sleep(5)
-        await client.delete_message(bot_message)
-        history[str(message.author)] = 0
+            last_warning = msg_time
+            await asyncio.sleep(5)
+            await client.delete_message(bot_message)
+
         return True
-    else:
-        history[str(message.author)] = msg_time
+
+    history[str(message.author)] = msg_time
 
     # Profanity Filter
 
