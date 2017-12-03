@@ -1,7 +1,7 @@
 import random
 import ast
 
-from pimodisco import version
+from pimodisco import version as version__
 
 cmd_prefix = '!'
 
@@ -52,7 +52,7 @@ Commands:
 {}
 
 Type {}help <command> for help with that command.```""".format(
-            version,
+            version__,
             cmd_prefix,
             '\n'.join('{:10} {}'.format(f.__name__, f.__doc__.split('\n', 1)[0]) for f in sorted(commands.values(), key = lambda f: f.__name__)),
             cmd_prefix,
@@ -73,7 +73,7 @@ async def goodbye(client, message):
 @command
 async def version(client, message):
     """Says the currently active version of the bot."""
-    await client.send_message(message.channel, 'Version {}'.format(version))
+    await client.send_message(message.channel, 'Version {}'.format(version__))
 
 @command
 async def code(client, message):
