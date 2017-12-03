@@ -112,7 +112,7 @@ async def add(client, message):
     # ast.literal_eval is safe for unknown inputs
     try:
         answer = sum((ast.literal_eval(n) for n in message.content.split()[1:]))
-    except SyntaxError:
+    except Exception:
         await client.send_message(message.channel, "Something in there isn't a number, sorry.")
     else:
         await client.send_message(message.channel, random.choice(messages).format(answer))
