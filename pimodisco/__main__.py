@@ -2,7 +2,7 @@ import discord
 import asyncio
 
 
-from pimodisco.commands import command, commands
+from pimodisco.commands import commands
 from pimodisco.filter import filter
 
 # modules which contain commands must be imported, even though we don't use them directly.
