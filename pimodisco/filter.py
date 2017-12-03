@@ -5,14 +5,10 @@ import string
 history = {}
 
 async def filter(client, message):
-    author = message.author
-
     msg_time = time.time()
     spam_limit = msg_time - 2
 
-    msg = message.content
-    channel = message.channel
-    words = msg.split()
+    words = message.content.split()
 
     history_item = history.get(str(message.author))
     history[str(message.author)] = msg_time
@@ -29,7 +25,7 @@ async def filter(client, message):
         if history_item >= spam_limit:
             await client.delete_message(message)
             bot_message = await client.send_message(message.channel,
-                                                    "{}, please do not send spam!".format(author.mention))
+                                                    "{}, please do not send spam!".format(message.author.mention))
             await asyncio.sleep(5)
             await client.delete_message(bot_message)
             message = None
@@ -53,7 +49,7 @@ async def filter(client, message):
         if word in filter:
             await client.delete_message(message)
             bot_message = await client.send_message(message.channel,
-                                                    "Please refrain from using profanity {}.".format(author.mention))
+                                                    "Please refrain from using profanity {}.".format(message.author.mention))
             await asyncio.sleep(5)
             await client.delete_message(bot_message)
             return True
