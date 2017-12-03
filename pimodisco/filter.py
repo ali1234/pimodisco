@@ -1,8 +1,9 @@
 import asyncio
 import time
 import string
+from collections import defaultdict
 
-history = {}
+history = defaultdict(int)
 
 async def filter(client, message):
     msg_time = time.time()
@@ -10,27 +11,16 @@ async def filter(client, message):
 
     words = message.content.split()
 
-    history_item = history.get(str(message.author))
-    history[str(message.author)] = msg_time
-    print(history_item)
-    print(msg_time)
-    try:
-        history_item = int(history_item)
-    except:
-        print("Nonetype in message history...")
-    if history_item == None:
-        print("Adding history event...")
-        history[str(message.author)] = msg_time
+    if history[str(message.author)] >= spam_limit:
+        await client.delete_message(message)
+        bot_message = await client.send_message(message.channel,
+                                                "{}, please do not send spam!".format(message.author.mention))
+        await asyncio.sleep(5)
+        await client.delete_message(bot_message)
+        history[str(message.author)] = 0
+        return True
     else:
-        if history_item >= spam_limit:
-            await client.delete_message(message)
-            bot_message = await client.send_message(message.channel,
-                                                    "{}, please do not send spam!".format(message.author.mention))
-            await asyncio.sleep(5)
-            await client.delete_message(bot_message)
-            message = None
-            history[str(message.author)] = None
-            return True
+        history[str(message.author)] = msg_time
 
     # Profanity Filter
 
