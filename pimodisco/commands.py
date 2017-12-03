@@ -3,6 +3,8 @@ import ast
 
 from pimodisco import version
 
+cmd_prefix = '!'
+
 commands = {}
 
 def command(f):
@@ -42,13 +44,18 @@ async def help(client, message):
         await client.send_message(message.channel, """```A good ol' Pimoroni Robot (Pirated, of course)
 Version {}
 
+Commands should be prefixed with '{}' and are not case sensitive.
+
 The source code for the Pimoroni Bot can be found here: https://github.com/RaspberryPicardBox/Pimoroni-Discord-Bot
         
 Commands: 
 {}
 
-Type !help <command> for help with that command.```""".format(version,
-            '\n'.join('{:10} {}'.format(f.__name__, f.__doc__.split('\n', 1)[0]) for f in sorted(commands.values(), key = lambda f: f.__name__))
+Type {}help <command> for help with that command.```""".format(
+            version,
+            cmd_prefix,
+            '\n'.join('{:10} {}'.format(f.__name__, f.__doc__.split('\n', 1)[0]) for f in sorted(commands.values(), key = lambda f: f.__name__)),
+            cmd_prefix,
         ))
 
 @command

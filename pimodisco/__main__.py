@@ -2,7 +2,7 @@ import discord
 import asyncio
 
 
-from pimodisco.commands import commands
+from pimodisco.commands import commands, cmd_prefix
 from pimodisco.filter import filter
 
 # modules which contain commands must be imported, even though we don't use them directly.
@@ -22,7 +22,7 @@ async def on_message(message):
     if await filter(client, message):
         # something bad about this message, so ignore it.
         pass
-    elif message.content.startswith('!'):
+    elif message.content.startswith(cmd_prefix):
         parsed = message.content.split(maxsplit=1)
         try:
             await commands[parsed[0][1:].lower()](client, message)
