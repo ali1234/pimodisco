@@ -3,7 +3,7 @@ import asyncio
 
 
 from pimodisco.commands import command, commands
-from pimodisco.legacy import legacy
+from pimodisco.filter import filter
 
 # modules which contain commands must be imported, even though we don't use them directly.
 # importing them causes them to register with pimodisco.commands.
@@ -19,17 +19,16 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-    if message.content.startswith('!'):
+    if await filter(client, message):
+        # something bad about this message, so ignore it.
+        pass
+    elif message.content.startswith('!'):
         parsed = message.content.split(maxsplit=1)
         try:
             await commands[parsed[0][1:].lower()](client, message)
         except KeyError:
             await client.send_message(message.channel, "I don't know that command. Type !help for a list of commands.")
-    else:
-        await legacy(client, message)
 
-
-    
 @client.event
 async def on_member_join(member):
     welcome = await client.send_message(discord.Object(general), "Welcome {} to the Officially Unofficial Pimoroni Discord Server!".format(member.mention))
