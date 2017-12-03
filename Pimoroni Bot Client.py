@@ -8,8 +8,7 @@ import time
 # ---Setup (Background Stuff)---
 
 
-testtoken = "token"
-token = "token"
+token = open('token.txt').read().strip()
 
 
 generaltest = "347821796692852749"
