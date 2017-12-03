@@ -38,25 +38,15 @@ async def on_message(message):
 
 @client.event
 async def on_member_join(member):
-    welcome = await client.send_message(discord.Object(general), "Welcome {} to the Officially Unofficial Pimoroni Discord Server!".format(member.mention))
-    await asyncio.sleep(5)
-    await client.delete_message(welcome)
+    pass
+    #welcome = await client.send_message(discord.Object(general), "Welcome {} to the Officially Unofficial Pimoroni Discord Server!".format(member.mention))
+    #await asyncio.sleep(5)
+    #await client.delete_message(welcome)
 
 
 @client.event
 async def on_ready():
-    print('Logged in as')
-    print(client.user.name)
-    print(client.user.id)
-    print('------')
-    try:
-        await client.send_message(discord.Object(bot_testing), "Pimoroni Bot started...")
-    except:
-        print("Not on real server!")
-    try:
-        await client.send_message(discord.Object(generaltest), "Pimoroni Bot started...")
-    except:
-        print("Not on test server!")
+    print('Logged in as {} {}'.format(client.user.name, client.user.id))
 
 
 def main():
