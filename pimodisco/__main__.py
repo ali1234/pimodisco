@@ -393,9 +393,12 @@ async def on_ready():
         await client.send_message(discord.Object(generaltest), "Pimoroni Bot started...")
     except:
         print("Not on test server!")
-        
 
-client.run(token)
+def main():
+    client.run(token)
+
+if __name__ == '__main__':
+    main()
 
 
 
