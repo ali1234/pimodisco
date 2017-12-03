@@ -33,7 +33,7 @@ async def help(client, message):
     Usage: help [<command>]
        - command: command you want help with.
     """
-    words = message.content.split()
+    words = message.content.split(maxsplit=2)
     if len(words) > 1:
         if words[1] in commands:
             f = commands[words[1]]
