@@ -13,7 +13,7 @@ def command(f):
     return f
 
 def authorized(f):
-    """Decorator to make a command as authorized."""
+    """Decorator to mark a command as authorized."""
     async def checkauth(client, message):
         authorized_roles = ['@swashbucklers', '@staff']
         roles = [y.name.lower() for y in message.author.roles]
