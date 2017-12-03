@@ -5,6 +5,12 @@ import asyncio
 from pimodisco.commands import command, commands
 from pimodisco.legacy import legacy
 
+# modules which contain commands must be imported, even though we don't use them directly.
+# importing them causes them to register with pimodisco.commands.
+
+import pimodisco.product # product search
+
+
 token = open('token.txt').read().strip()
 client = discord.Client()
 
