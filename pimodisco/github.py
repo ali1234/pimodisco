@@ -22,13 +22,13 @@ async def github(client, message):
     else:
         try:
             url = 'https://api.github.com/search/repositories?q=user:pimoroni+{}'.format(quote_plus(query))
-            result = requests.get(url).json()
+            result = requests.get(url).json()['items']
         except Exception as e:
             print(e)
             await client.send_message(message.channel, "Sorry, there was a problem communicating with GitHub.")
         else:
             try:
-                best = result['items'][0]
+                best = result[0]
             except IndexError:
                 await client.send_message(message.channel, "Sorry, I couldn't find anything matching that description.")
             else:

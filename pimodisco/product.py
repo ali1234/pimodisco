@@ -32,12 +32,12 @@ async def product(client, message):
         await client.send_message(message.channel, "What do you want to search for?")
     else:
         try:
-            result = index.search(query, {'hitsPerPage': 1, 'attributesToRetrieve': 'title,handle,stock_description,price'})
+            result = index.search(query, {'hitsPerPage': 1, 'attributesToRetrieve': 'title,handle,stock_description,price'})['hits']
         except Exception:
             await client.send_message(message.channel, "Sorry, there was a problem communicating with the Pimoroni store.")
         else:
             try:
-                best = result['hits'][0]
+                best = result[0]
             except IndexError:
                 await client.send_message(message.channel, "Sorry, I couldn't find anything matching that description.")
             else:
