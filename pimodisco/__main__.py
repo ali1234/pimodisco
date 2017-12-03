@@ -8,10 +8,17 @@ from pimodisco.filter import filter
 # modules which contain commands must be imported, even though we don't use them directly.
 # importing them causes them to register with pimodisco.commands.
 
-import pimodisco.product # product search
+try:
+    import pimodisco.product
+except ImportError:
+    print('Product search not available.')
 
+try:
+    token = open('token.txt').read().strip()
+except Exception:
+    print('Please put Discord bot token in token.txt.')
+    exit(-1)
 
-token = open('token.txt').read().strip()
 client = discord.Client()
 
 @client.event

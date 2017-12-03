@@ -2,7 +2,12 @@ from algoliasearch import algoliasearch
 
 from pimodisco.commands import command
 
-cred = open('algolia.txt').read().strip().split(',')
+try:
+    cred = open('algolia.txt').read().strip().split(',')
+except Exception:
+    print('Please put algolia credentials in algolia.txt, as "app_id,api_key".')
+    raise ImportError
+
 
 search = algoliasearch.Client(*cred)
 # algolia refuses service if referer is wrong. lol.
