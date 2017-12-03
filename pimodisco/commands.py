@@ -19,6 +19,7 @@ def authorized(f):
         else:
             await client.send_message(message.channel, "You do not have permission to use this command.")
     checkauth.__name__ = f.__name__
+    checkauth.__doc__ = f.__doc__
     return checkauth
 
 
@@ -41,7 +42,7 @@ The source code for the Pimoroni Bot can be found here: https://github.com/Raspb
 Commands: {}
 
 Type !help <command> for help with that command.```""".format(version,
-            ', '.join(f.__name__ for f in commands.values())
+            '\n'.join(' - {}: {}'.format(f.__name__, f.__doc__) for f in commands.values())
         ))
 
 @command
