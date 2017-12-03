@@ -8,6 +8,8 @@ from pimodisco.filter import filter
 # modules which contain commands must be imported, even though we don't use them directly.
 # importing them causes them to register with pimodisco.commands.
 
+import pimodisco.github
+
 try:
     import pimodisco.product
 except ImportError:
