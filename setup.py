@@ -1,9 +1,10 @@
 from setuptools import setup
+from pimodisco import version
 
 setup(
     name='pimodisco',
     keywords='Pimoroni Discord Bot',
-    version='2.0.2',
+    version=version,
     license='GPLv3+',
     packages=['pimodisco'],
     install_requires=[
