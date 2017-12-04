@@ -79,7 +79,7 @@ async def version(client, message):
 
 @command
 async def code(client, message):
-    """Prints a link to the bots code."""
+    """Prints a link to the bot's code."""
     await client.send_message(message.channel,
                   "Here's a link to my source code: {}".format(source_url))
 
