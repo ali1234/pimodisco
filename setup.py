@@ -9,7 +9,7 @@ setup(
     license='GPLv3+',
     packages=['pimodisco'],
     install_requires=[
-        'discord', 'algoliasearch', 'markdown', 'pyyaml'
+        'discord', 'algoliasearch', 'markdown', 'pyyaml', 'profanityfilter', 'inflection'
     ],
     entry_points={
         'console_scripts': [
