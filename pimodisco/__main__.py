@@ -9,6 +9,7 @@ from pimodisco.filter import filter
 # importing them causes them to register with pimodisco.commands.
 
 import pimodisco.github
+import pimodisco.pinout
 
 try:
     import pimodisco.youtube
