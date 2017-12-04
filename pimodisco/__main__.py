@@ -23,9 +23,9 @@ except ImportError:
 token = os.environ.get('DISCORD_BOT_TOKEN')
 if not token:
     try:
-        token = open('token.txt').read().strip()
+        token = open('discord.txt').read().strip()
     except Exception:
-        print('Please put Discord bot token in token.txt or set the environment variable DISCORD_BOT_TOKEN.')
+        print('Please put Discord bot token in discord.txt or set the environment variable DISCORD_BOT_TOKEN.')
         exit(-1)
 
 client = discord.Client()
