@@ -1,5 +1,6 @@
 import asyncio
 import time
+import string
 from collections import defaultdict
 from profanityfilter import ProfanityFilter
 
@@ -29,8 +30,8 @@ async def filter(client, message):
     history[str(message.author)] = msg_time
 
     # Profanity Filter
-
-    if pf.is_profane(message.content):
+    translator = str.maketrans(string.punctuation, ' ' * len(string.punctuation))  # map punctuation to space
+    if pf.is_profane(message.content.translate(translator)):
         await client.delete_message(message)
         bot_message = await client.send_message(message.channel,
                                                 "Please refrain from using profanity {}.".format(message.author.mention))
