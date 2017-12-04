@@ -2,7 +2,7 @@ import discord
 import os
 
 
-from pimodisco.commands import commands, cmd_prefix
+from pimodisco.commands import get_cmd, cmd_prefix
 from pimodisco.filter import filter
 
 # modules which contain commands must be imported, even though we don't use them directly.
@@ -42,7 +42,7 @@ async def on_message(message):
     elif message.content.startswith(cmd_prefix):
         parsed = message.content.split(maxsplit=1)
         try:
-            f = commands[parsed[0][1:].lower()]
+            f = get_cmd(parsed[0][1:])
         except KeyError:
             await client.send_message(message.channel, "I don't know that command. Type !help for a list of commands.")
         else:

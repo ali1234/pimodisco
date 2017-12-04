@@ -6,12 +6,21 @@ from pimodisco import source_url
 
 cmd_prefix = '!'
 
-commands = {}
+_commands = {}
+_synonyms = {}
 
 def command(f):
     """Decorator to mark a function as a command."""
-    commands[f.__name__] = f
+    _commands[f.__name__] = f
     return f
+
+class synonyms(object):
+    def __init__(self, *args):
+        self.synonyms = args
+    def __call__(self, f):
+        for s in self.synonyms:
+            _synonyms[s] = f
+        return f
 
 def authorized(f):
     """Decorator to mark a command as authorized."""
@@ -26,8 +35,15 @@ def authorized(f):
     checkauth.__doc__ = f.__doc__
     return checkauth
 
+def get_cmd(cmd):
+    cmd = cmd.lower()
+    try:
+        return _commands[cmd]
+    except KeyError:
+        return _synonyms[cmd]
 
 @command
+@synonyms('about')
 async def help(client, message):
     """Prints help about commands. With no argument, prints general help.
 
@@ -36,11 +52,12 @@ async def help(client, message):
     """
     words = message.content.split(maxsplit=2)
     if len(words) > 1:
-        if words[1] in commands:
-            f = commands[words[1]]
-            await client.send_message(message.channel, '```{}: {}```'.format(f.__name__, f.__doc__))
-        else:
+        try:
+            f = get_cmd(words[1])
+        except KeyError:
             await client.send_message(message.channel, "I don't know that command. Type !help for a list of commands.")
+        else:
+            await client.send_message(message.channel, '```{}: {}```'.format(f.__name__, f.__doc__))
     else:
         await client.send_message(message.channel, """```A good ol' Pimoroni Robot (Pirated, of course)
 Version {}
@@ -56,17 +73,19 @@ Type {}help <command> for help with that command.```""".format(
             version__,
             cmd_prefix,
             source_url,
-            '\n'.join('{:10} {}'.format(f.__name__, f.__doc__.split('\n', 1)[0]) for f in sorted(commands.values(), key = lambda f: f.__name__)),
+            '\n'.join('{:10} {}'.format(f.__name__, f.__doc__.split('\n', 1)[0]) for f in sorted(_commands.values(), key = lambda f: f.__name__)),
             cmd_prefix,
         ))
 
 @command
+@synonyms('hi')
 async def hello(client, message):
     """Says hello back to you!"""
     greetings = ['Hello', 'Hi', 'Greetings', "What's up"]
     await client.send_message(message.channel, '{} {}!'.format(random.choice(greetings), message.author.mention))
 
 @command
+@synonyms('bye')
 async def goodbye(client, message):
     """Says goodbye back to you!"""
     goodbyes = ['Goodbye', 'See you', 'Later', 'Tata']
@@ -78,6 +97,7 @@ async def version(client, message):
     await client.send_message(message.channel, 'Version {}'.format(version__))
 
 @command
+@synonyms('source')
 async def code(client, message):
     """Prints a link to the bot's code."""
     await client.send_message(message.channel,
@@ -103,6 +123,7 @@ async def choose(client, message):
         await client.send_message(message.channel, 'What are the options?')
 
 @command
+@synonyms('sum')
 async def add(client, message):
     """Add a list of numbers.
 

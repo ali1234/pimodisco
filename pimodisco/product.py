@@ -2,7 +2,7 @@ import os
 
 from algoliasearch import algoliasearch
 
-from pimodisco.commands import command
+from pimodisco.commands import command, synonyms
 
 try:
     cred = os.environ.get('ALGOLIA_CREDENTIALS').split(',')
@@ -20,6 +20,7 @@ search._transport.session.headers.update({'Referer': 'https://shop.pimoroni.com/
 index = search.init_index('shop.pimoroni.com.products')
 
 @command
+@synonyms('shop')
 async def product(client, message):
     """Search the Pimoroni store.
 
