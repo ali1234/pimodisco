@@ -9,7 +9,11 @@ from pimodisco.filter import filter
 # importing them causes them to register with pimodisco.commands.
 
 import pimodisco.github
-import pimodisco.youtube
+
+try:
+    import pimodisco.youtube
+except ImportError:
+    print('YouTube search not available.')
 
 try:
     import pimodisco.product

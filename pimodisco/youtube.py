@@ -16,7 +16,7 @@ if not api_key:
         api_key = open('youtube.txt').read().strip()
     except Exception:
         print('Please put Youtube API key in youtube.txt or set the environment variable YOUTUBE_SERVER_API_KEY.')
-        exit(-1)
+        raise ImportError
 
 @command
 async def youtube(client, message):
