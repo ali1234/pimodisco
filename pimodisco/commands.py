@@ -14,6 +14,11 @@ def command(f):
     _commands[f.__name__] = f
     return f
 
+def secret(f):
+    """Decorator to mark a function as secret."""
+    f._secret = True
+    return f
+
 class synonyms(object):
     def __init__(self, *args):
         self.synonyms = args
@@ -54,6 +59,8 @@ async def help(client, message):
     if len(words) > 1:
         try:
             f = get_cmd(words[1])
+            if hasattr(f, '_secret'):
+                raise KeyError
         except KeyError:
             await client.send_message(message.channel, "I don't know that command. Type !help for a list of commands.")
         else:
@@ -73,7 +80,11 @@ Type {}help <command> for help with that command.```""".format(
             version__,
             cmd_prefix,
             source_url,
-            '\n'.join('{:10} {}'.format(f.__name__, f.__doc__.split('\n', 1)[0]) for f in sorted(_commands.values(), key = lambda f: f.__name__)),
+            '\n'.join('{:10} {}'.format(
+                    f.__name__,
+                    f.__doc__.split('\n', 1)[0]
+                ) for f in sorted(_commands.values(), key = lambda f: f.__name__) if not hasattr(f, '_secret')
+            ),
             cmd_prefix,
         ))
 
@@ -166,6 +177,22 @@ async def link(client, message):
         except KeyError:
             await client.send_message(message.channel, "I don't know where that is. Try one of these: {}".format(', '.join(l for l in links)))
 
+@command
+@secret
+async def sudo(client, message):
+    """A secret command. You will never see this help message."""
+    words = message.content.split(maxsplit=4)
+    params = ['make', 'me', 'a', 'sandwich']
+    foods = [':croissant:', ':hamburger:', ':stuffed_pita:', ':hotdog:', ':bread:']
+    messages = ['How about a {} instead?', 'Best I can do is {}']
+
+    if len(words) == 5 and all(words[n+1] == params[n] for n in range(3)):
+        if str(message.author) == 'Ryanteck#1989':
+            await client.send_message(message.channel, "Okay {}, you're a sandwich.".format(message.author.mention))
+        else:
+            await client.send_message(message.channel, random.choice(messages).format(random.choice(foods)))
+    else:
+        await client.send_message(message.channel, "I don't know that command. Type !help for a list of commands.")
 
 @command
 @authorized
