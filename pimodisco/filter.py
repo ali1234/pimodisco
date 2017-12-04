@@ -8,6 +8,7 @@ history = defaultdict(int)
 last_warning = 0
 
 pf = ProfanityFilter(extra_censor_list=['brexit', 'trump'])
+translator = str.maketrans(string.punctuation, ' ' * len(string.punctuation))  # map punctuation to space
 
 async def filter(client, message):
     global last_warning
@@ -30,7 +31,6 @@ async def filter(client, message):
     history[str(message.author)] = msg_time
 
     # Profanity Filter
-    translator = str.maketrans(string.punctuation, ' ' * len(string.punctuation))  # map punctuation to space
     if pf.is_profane(message.content.translate(translator)):
         await client.delete_message(message)
         bot_message = await client.send_message(message.channel,
