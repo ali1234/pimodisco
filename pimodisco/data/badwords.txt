@@ -1,3 +1,5 @@
+# this is a comment
+
 cunt(?!horp)
 (?<!s)crap(?!e)
 (?<!s)nigger
@@ -9,4 +11,3 @@ twat(?!ch|h|er)
 bitch
 (?<!pos)tits
 (?<!s)wank(?!el)
-
