@@ -1,14 +1,33 @@
 import asyncio
 import time
 import string
+import pathlib
+import inflection
+import re
 from collections import defaultdict
-from profanityfilter import ProfanityFilter
 
 history = defaultdict(int)
 last_warning = 0
 
-pf = ProfanityFilter(extra_censor_list=['brexit', 'trump'])
-translator = str.maketrans(string.punctuation, ' ' * len(string.punctuation))  # map punctuation to space
+
+class ProfanityFilter(object):
+    def __init__(self):
+        self.tx = str.maketrans(string.punctuation, ' ' * len(string.punctuation))
+        bw = pathlib.Path(__file__).parent / 'data' / 'badwords.txt'
+        self._bad_words = list(word.strip() for word in bw.open().readlines())
+        regex = r'|'.join(r'{}'.format(word) for word in self._bad_words)
+        self.regex = re.compile(regex, re.IGNORECASE)
+
+    def censor(self, string):
+        ascii = inflection.transliterate(string.translate(self.tx))
+        return self.regex.sub('*', ascii)
+
+    def is_profane(self, string):
+        ascii = inflection.transliterate(string.translate(self.tx))
+        return self.regex.search(ascii)
+
+
+pf = ProfanityFilter()
 
 async def filter(client, message):
     global last_warning
@@ -31,7 +50,7 @@ async def filter(client, message):
     history[str(message.author)] = msg_time
 
     # Profanity Filter
-    if pf.is_profane(message.content.translate(translator)):
+    if pf.is_profane(message.content):
         await client.delete_message(message)
         bot_message = await client.send_message(message.channel,
                                                 "Please refrain from using profanity {}.".format(message.author.mention))
@@ -40,3 +59,10 @@ async def filter(client, message):
         return True
 
     return False
+
+
+if __name__ == '__main__':
+    with open('/usr/share/dict/words') as allwords:
+        for line in allwords:
+            if pf.is_profane(line):
+                print(line.strip())

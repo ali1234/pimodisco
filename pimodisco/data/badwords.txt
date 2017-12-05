@@ -1,0 +1,12 @@
+cunt(?!horp)
+(?<!s)crap(?!e)
+(?<!s)nigger
+\bshit
+fuck
+\barse(?!n)
+(?<!p|o|e)arse\b
+twat(?!ch|h|er)
+bitch
+(?<!pos)tits
+(?<!s)wank(?!el)
+
