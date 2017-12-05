@@ -5,7 +5,7 @@ import re
 import unicodedata
 import markdown
 import yaml
-import asyncio
+import pathlib
 
 from collections import defaultdict
 
@@ -14,7 +14,8 @@ try:
 except ImportError:
     from urllib.parse import quote_plus
 
-from pimodisco.commands import command, secret
+from pimodisco.commands import command
+from pimodisco.github import auth
 
 
 def slugify(value):
@@ -70,9 +71,10 @@ def loads(markson):
 def get_board_raw(query):
     url = 'https://api.github.com/search/code?q=repo:gadgetoid/pinout.xyz+path:src/en/overlay+{}'.format(
         quote_plus(query))
-    result = requests.get(url).json()['items']
-    content = requests.get(result[0]['url']).json()['content']
-    return loads((base64.b64decode(content).decode('utf-8')))
+    result = requests.get(url, auth=auth).json()['items']
+    url = 'https://api.pinout.xyz/v1/md/{}'.format(pathlib.Path(result[0]['path']).name)
+    yaml = requests.get(url).content
+    return loads(yaml.decode('utf-8'))
 
 @command
 async def pinout(client, message):
@@ -123,7 +125,6 @@ async def hatstack(client, message):
                 if q == '':
                     continue
                 boards.append(get_board_raw(q.strip()))
-                await asyncio.sleep(1)
             if len(boards) == 0:
                 await client.send_message(message.channel, "Please specify boards separated by '/'.")
                 return

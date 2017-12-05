@@ -30,6 +30,7 @@ To use all the features you also need some other API credentials:
 
 - `ALGOLIA_CREDENTIALS=app_id,api_key`, or place in `algolia.txt`.
 - `YOUTUBE_SERVER_API_KEY=key`, or place in `youtube.txt`.
+- `GITHUB_CREDENTIALS=user,api_key` or place in `github.txt`.
 
 
 # Extending
