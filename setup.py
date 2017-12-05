@@ -8,6 +8,7 @@ setup(
     url=source_url,
     license='GPLv3+',
     packages=['pimodisco'],
+    package_data={'pimodisco': ['data/badwords.txt']},
     install_requires=[
         'discord', 'algoliasearch', 'markdown', 'pyyaml', 'inflection'
     ],
