@@ -114,13 +114,19 @@ async def hatstack(client, message):
             await client.send_message(message.channel, "Can't compare more than six boards.")
             return
     except IndexError:
-        await client.send_message(message.channel, "Bad query syntax :(")
+        await client.send_message(message.channel, "Please specify boards separated by '/'.")
     else:
         try:
             boards = []
             for q in query:
+                q = q.strip()
+                if q == '':
+                    continue
                 boards.append(get_board_raw(q.strip()))
                 await asyncio.sleep(1)
+            if len(boards) == 0:
+                await client.send_message(message.channel, "Please specify boards separated by '/'.")
+                return
         except KeyError:
             await client.send_message(message.channel, "Sorry, there was a problem communicating with GitHub.")
         except IndexError:
