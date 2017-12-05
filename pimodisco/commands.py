@@ -34,6 +34,8 @@ def authorized(f):
         roles = [y.name.lower() for y in message.author.roles]
         if any(role in roles for role in authorized_roles):
             await f(client, message)
+        elif hasattr(f, '_secret'):
+            await client.send_message(message.channel, "I don't know that command. Type !help for a list of commands.")
         else:
             await client.send_message(message.channel, "You do not have permission to use this command.")
     checkauth.__name__ = f.__name__
