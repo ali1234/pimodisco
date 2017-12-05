@@ -6,12 +6,14 @@ import unicodedata
 import markdown
 import yaml
 
+from collections import defaultdict
+
 try:
     from urllib import quote_plus
 except ImportError:
     from urllib.parse import quote_plus
 
-from pimodisco.commands import command
+from pimodisco.commands import command, secret
 
 
 def slugify(value):
@@ -64,6 +66,13 @@ def loads(markson):
 
     return {'data':_data, 'html':_html}
 
+def get_board_raw(query):
+    url = 'https://api.github.com/search/code?q=repo:gadgetoid/pinout.xyz+path:src/en/overlay+{}'.format(
+        quote_plus(query))
+    result = requests.get(url).json()['items']
+    content = requests.get(result[0]['url']).json()['content']
+    return loads((base64.b64decode(content).decode('utf-8')))
+
 @command
 async def pinout(client, message):
     """Search Pinout.xyz for a particular product.
@@ -78,19 +87,61 @@ async def pinout(client, message):
         await client.send_message(message.channel, "Pinout.xyz is at: https://pinout.xyz")
     else:
         try:
-            url = 'https://api.github.com/search/code?q=repo:gadgetoid/pinout.xyz+path:src/en/overlay+{}'.format(quote_plus(query))
-            result = requests.get(url).json()['items']
-            content = requests.get(result[0]['url']).json()['content']
-            raw = loads((base64.b64decode(content).decode('utf-8')))
-        except Exception as e:
+            raw = get_board_raw(query)
+        except KeyError:
             await client.send_message(message.channel, "Sorry, there was a problem communicating with GitHub.")
+        except IndexError:
+            await client.send_message(message.channel, "Sorry, I couldn't find anything matching that description.")
         else:
-            try:
-                best = result[0]
-            except IndexError:
-                await client.send_message(message.channel, "Sorry, I couldn't find anything matching that description.")
-            else:
+            await client.send_message(message.channel, '{} {}: https://pinout.xyz/pinout/{}#'.format(
+                raw['data']['manufacturer'], raw['data']['title'], slugify(raw['data']['name'])
+            ) )
 
-                await client.send_message(message.channel, '{} {}: https://pinout.xyz/pinout/{}#'.format(
-                    raw['data']['manufacturer'], raw['data']['title'], slugify(raw['data']['name'])
-                ) )
+@command
+@secret
+async def hatstack(client, message):
+    """Search Pinout.xyz for a particular product.
+
+    Usage: pinout [<query>]
+       - searches Pinout.xyz for a board matching <query>.
+         If no query, prints a link to the main page.
+    """
+    await client.send_typing(message.channel)
+    try:
+        query = message.content.split(maxsplit=1)[1].split('/')
+    except IndexError:
+        await client.send_message(message.channel, "Bad query syntax :(")
+    else:
+        try:
+            boards = [get_board_raw(q.strip()) for q in query]
+        except KeyError:
+            await client.send_message(message.channel, "Sorry, there was a problem communicating with GitHub.")
+        except IndexError:
+            await client.send_message(message.channel, "Sorry, I couldn't find anything matching that description.")
+        else:
+            overlap = defaultdict(list)
+            for b in boards:
+                for i in range(1, 41):
+                    if str(i) in b['data']['pin']:
+                        if b['data']['pin'][str(i)]['mode'] != 'i2c':
+                            overlap[i].append(b['data']['title'])
+                            print('{} {}'.format(i, b['data']['title']))
+
+            i2caddr = defaultdict(list)
+            for b in boards:
+                if 'i2c' in b['data']:
+                    for addr in b['data']['i2c'].keys():
+                        i2caddr[addr].append(b['data']['title'])
+                        print('{} {}'.format(addr, b['data']['title']))
+
+            await client.send_message(message.channel, '''Selected boards:\n\n{}\n\n{}\n\n{}\n{}'''.format(
+                '\n'.join('{} {}'.format(
+                    b['data']['manufacturer'],
+                    b['data']['title']
+                ) for b in boards),
+                'Collisions:' if (any(len(o) > 1 for o in overlap.values()) or any(len(o) > 1 for o in i2caddr.values())) else 'Boards are compatible.',
+                '\n'.join('Pin {}: {}'.format(k, ', '.join(v)) for k, v in overlap.items() if len(v) > 1),
+                '\n'.join('I2C Address {}: {}'.format(k, ', '.join(v)) for k, v in i2caddr.items() if len(v) > 1)
+            ))
+
+
