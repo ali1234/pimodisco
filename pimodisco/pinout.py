@@ -5,6 +5,7 @@ import re
 import unicodedata
 import markdown
 import yaml
+import asyncio
 
 from collections import defaultdict
 
@@ -113,7 +114,10 @@ async def hatstack(client, message):
         await client.send_message(message.channel, "Bad query syntax :(")
     else:
         try:
-            boards = [get_board_raw(q.strip()) for q in query]
+            boards = []
+            for q in query:
+                boards.append(get_board_raw(q.strip()))
+                await asyncio.sleep(1)
         except KeyError:
             await client.send_message(message.channel, "Sorry, there was a problem communicating with GitHub.")
         except IndexError:
@@ -123,16 +127,22 @@ async def hatstack(client, message):
             for b in boards:
                 for i in range(1, 41):
                     if str(i) in b['data']['pin']:
-                        if b['data']['pin'][str(i)]['mode'] != 'i2c':
-                            overlap[i].append(b['data']['title'])
-                            print('{} {}'.format(i, b['data']['title']))
+                        try:
+                            fnc = b['data']['pin'][str(i)]['mode']
+                        except KeyError:
+                            try:
+                                fnc = b['data']['pin'][str(i)]['name']
+                            except KeyError:
+                                fnc = 'Unknown'
+                        finally:
+                            if fnc != 'i2c':
+                                overlap[i].append('{} ({})'.format(b['data']['title'], fnc))
 
             i2caddr = defaultdict(list)
             for b in boards:
                 if 'i2c' in b['data']:
                     for addr in b['data']['i2c'].keys():
                         i2caddr[addr].append(b['data']['title'])
-                        print('{} {}'.format(addr, b['data']['title']))
 
             await client.send_message(message.channel, '''Selected boards:\n\n{}\n\n{}\n\n{}\n{}'''.format(
                 '\n'.join('{} {}'.format(
