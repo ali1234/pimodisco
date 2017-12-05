@@ -13,8 +13,8 @@ last_warning = 0
 class ProfanityFilter(object):
     def __init__(self):
         self.tx = str.maketrans(string.punctuation, ' ' * len(string.punctuation))
-        bw = pathlib.Path(__file__).parent / 'data' / 'badwords.txt'
-        self._bad_words = list(word.strip() for word in bw.open().readlines() if len(word) > 0 and word[0] != '#')
+        with (pathlib.Path(__file__).parent / 'data' / 'badwords.txt').open() as bw:
+            self._bad_words = list(word.strip() for word in bw.readlines() if len(word.strip()) > 0 and word[0] != '#')
         regex = r'|'.join(r'{}'.format(word) for word in self._bad_words)
         self.regex = re.compile(regex, re.IGNORECASE)
 
