@@ -99,17 +99,19 @@ async def pinout(client, message):
             ) )
 
 @command
-@secret
 async def hatstack(client, message):
-    """Search Pinout.xyz for a particular product.
+    """Check compatibility between boards using Pinout.xyz
 
-    Usage: pinout [<query>]
-       - searches Pinout.xyz for a board matching <query>.
-         If no query, prints a link to the main page.
+    Usage: pinout <query> [/ <query> / ...]
+       - Supply a list of up to six boards separated with '/'.
+         A list of pin/i2c address collisions will be displayed.
     """
     await client.send_typing(message.channel)
     try:
         query = message.content.split(maxsplit=1)[1].split('/')
+        if len(query) > 6:
+            await client.send_message(message.channel, "Can't compare more than six boards.")
+            return
     except IndexError:
         await client.send_message(message.channel, "Bad query syntax :(")
     else:
