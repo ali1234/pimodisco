@@ -22,8 +22,9 @@ In order to run this bot for yourself, you need:
 In order to add the bot to a server, simply navigate to
     https://discordapp.com/api/oauth2/authorize?client_id=[CLIENT ID]&scope=bot&permissions=0, replacing [CLIENT ID] with your bot's client ID.
 
-Place the bot token into discord.txt in the current directory where you
-run the bot, or put it in the environment variable `DISCORD_BOT_TOKEN`.
+Place the bot token into `discord.txt` in the current directory where
+you run the bot, or put it in the environment variable
+`DISCORD_BOT_TOKEN`.
 
 To use all the features you also need some other API credentials:
 
