@@ -105,6 +105,7 @@ async def hatstack(client, message):
     Usage: pinout <query> [/ <query> / ...]
        - Supply a list of up to six boards separated with '/'.
          A list of pin/i2c address collisions will be displayed.
+         Pinout.xyz is crowdsourced and results may be innaccurate.
     """
     await client.send_typing(message.channel)
     try:
