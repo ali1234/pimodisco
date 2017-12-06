@@ -62,7 +62,8 @@ async def filter(client, message):
 
 
 if __name__ == '__main__':
-    with open('/usr/share/dict/words') as allwords:
+    import sys
+    with open(sys.argv[1]) as allwords:
         for line in allwords:
             if pf.is_profane(line):
                 print(line.strip())

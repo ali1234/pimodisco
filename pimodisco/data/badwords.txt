@@ -1,13 +1,15 @@
 # this is a comment
 
 cunt(?!horp)
-(?<!s)crap(?!e)
+(?<!s)crap(?!e|pie)
+(?<!s)crappiest
 (?<!s)nigger
-\bshit
+(?<!cu|if|mi|yo|to)shit(?!a|o|tim)
 fuck
 \barse(?!n)
-(?<!p|o|e)arse\b
+(?<!c|p|o|e)arse\b
 twat(?!ch|h|er)
 bitch
-(?<!pos)tits
-(?<!s)wank(?!el)
+(?<!os|pe)tits
+(?<!s)wank(?!el|dorf)
+(?<!ins)piss(?!arro)
