@@ -101,7 +101,8 @@ async def pinout(client, message):
             ) )
 
 @command
-async def hatstack(client, message):
+@synonyms('hatstack')
+async def phatstack(client, message):
     """Check compatibility between boards using Pinout.xyz
 
     Usage: pinout <query> [/ <query> / ...]
