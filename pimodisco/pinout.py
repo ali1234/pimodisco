@@ -14,7 +14,7 @@ try:
 except ImportError:
     from urllib.parse import quote_plus
 
-from pimodisco.commands import command
+from pimodisco.commands import command, synonyms
 from pimodisco.github import auth
 
 
