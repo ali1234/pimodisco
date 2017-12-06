@@ -1,13 +1,23 @@
 import asyncio
-import time
+import datetime
 import string
 import pathlib
 import inflection
 import re
-from collections import defaultdict
+from collections import defaultdict, deque
 
-history = defaultdict(int)
-last_warning = 0
+class historybuffer(deque):
+    def __init__(self):
+        super().__init__(maxlen=3)
+
+    def too_fast(self, message):
+        self.append(message)
+        if len(self) < self.maxlen:
+            return False
+        return (self[-1].timestamp - self[0].timestamp) < datetime.timedelta(seconds = self.maxlen)
+
+history = defaultdict(historybuffer)
+last_warning = datetime.datetime.now()
 
 
 class ProfanityFilter(object):
@@ -33,21 +43,20 @@ async def filter(client, message):
     global last_warning
     global history
 
-    msg_time = time.time()
-    spam_limit = msg_time - 2
+    msg_time = datetime.datetime.now()
 
-    if history[str(message.author)] >= spam_limit:
+    if history[str(message.author)].too_fast(message):
         await client.delete_message(message)
-        if msg_time - last_warning > 5:
+
+        if msg_time - last_warning > datetime.timedelta(seconds=5):
             bot_message = await client.send_message(message.channel,
                                                 "{}, please do not send spam!".format(message.author.mention))
             last_warning = msg_time
-            await asyncio.sleep(5)
+            await asyncio.sleep(4)
             await client.delete_message(bot_message)
 
         return True
 
-    history[str(message.author)] = msg_time
 
     # Profanity Filter
     if pf.is_profane(message.content):
