@@ -11,6 +11,8 @@ from pimodisco.filter import filter
 import pimodisco.github
 import pimodisco.pinout
 
+from pimodisco.classify import react_to_image
+
 try:
     import pimodisco.youtube
 except ImportError:
@@ -39,14 +41,18 @@ async def on_message(message):
     if await filter(client, message):
         # something bad about this message, so ignore it.
         pass
-    elif message.content.startswith(cmd_prefix):
-        parsed = message.content.split(maxsplit=1)
-        try:
-            f = get_cmd(parsed[0][1:])
-        except KeyError:
-            await client.send_message(message.channel, "I don't know that command. Type !help for a list of commands.")
-        else:
-            await f(client, message)
+    else:
+        if message.content.startswith(cmd_prefix):
+            parsed = message.content.split(maxsplit=1)
+            try:
+                f = get_cmd(parsed[0][1:])
+            except KeyError:
+                await client.send_message(message.channel, "I don't know that command. Type !help for a list of commands.")
+            else:
+                await f(client, message)
+
+        await react_to_image(client, message)
+
 
 @client.event
 async def on_member_join(member):
@@ -63,6 +69,8 @@ async def on_ready():
 
 def main():
     client.run(token)
+    for x in client.get_all_emojis():
+        print(x.name)
 
 
 if __name__ == '__main__':
