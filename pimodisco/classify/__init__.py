@@ -5,8 +5,6 @@ import emoji
 
 from pimodisco.classify.classify import run_inference_on_image
 
-from pimodisco.commands import command
-
 reactions = set(e[1:-1].lower() for e in itertools.chain(emoji.EMOJI_UNICODE.keys(), emoji.EMOJI_ALIAS_UNICODE.keys()))
 
 async def react_to_image(client, message):

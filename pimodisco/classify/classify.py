@@ -64,16 +64,7 @@ def run_inference_on_file(image):
     return run_inference_on_image(image_data)
 
 def run_inference_on_image(image_data):
-    """Runs inference on an image.
 
-    Args:
-      image: Image file name.
-
-    Returns:
-      Nothing
-    """
-
-    # Creates graph from saved GraphDef.
     with tf.Session() as sess:
         # Some useful tensors:
         # 'softmax:0': A tensor containing the normalized prediction across
