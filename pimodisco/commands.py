@@ -10,37 +10,46 @@ from discord.ext import commands
 def setup(bot):
     @bot.command(aliases=['hi'])
     async def hello(ctx):
-        """Says hello back to you!"""
+        """
+        Says hello back to you!
+        """
         greetings = ['Hello', 'Hi', 'Greetings', "What's up"]
         await ctx.send('{} {}!'.format(random.choice(greetings), ctx.author.mention))
 
     @bot.command(aliases=['bye'])
     async def goodbye(ctx):
-        """Says goodbye back to you!"""
+        """
+        Says goodbye back to you!
+        """
         goodbyes = ['Goodbye', 'See you', 'Later', 'Tata']
         await ctx.send('{} {}!'.format(random.choice(goodbyes), ctx.author.mention))
     
     @bot.command()
     async def version(ctx):
-        """Says the currently active version of the bot."""
+        """
+        Says the currently active version of the bot.
+        """
         await ctx.send('Version {}'.format(version__))
     
     @bot.command(aliases=['source'])
     async def code(ctx):
-        """Prints a link to the bot's code."""
+        """
+        Prints a link to the bot's code.
+        """
         await ctx.send("Here's a link to my source code: {}".format(source_url))
     
     @bot.command()
     async def roll(ctx, sides: int = 6):
-        """Roll a n-sided die. (Default 6)"""
+        """
+        Roll a n-sided die. (Default 6)
+        """
         roll = random.randint(1, sides)
         await ctx.send('{} rolled!'.format(roll))
     
     @bot.command()
     async def choose(ctx, *choices):
-        """Choose something from a list of options.
-    
-        Usage: choose <option> [<option> ...]
+        """
+        Choose something from a list of options.
         """
         recommendations = ['Try', 'Go with', 'Maybe', 'Definitely', 'Consider', 'I asked @Gadgetoid and he said']
         if len(choices) > 0:
@@ -50,9 +59,8 @@ def setup(bot):
     
     @bot.command(aliases=['sum'])
     async def add(ctx, *numbers):
-        """Add a list of numbers.
-    
-        Usage: add [<number> ...]
+        """
+        Add a list of numbers.
         """
         messages = ['Hmmm. {}.', 'Easy. {}.', 'That would be {}.', 'That equals {}.', "That's {}. Quick maths."]
         # ast.literal_eval is safe for unknown inputs
@@ -65,10 +73,8 @@ def setup(bot):
     
     @bot.command()
     async def link(ctx, thing: str = None):
-        """Get links to Pimoroni resources.
-    
-        Usage: link <thing>
-           - thing: the thing you want the link for.
+        """
+        Get links to Pimoroni resources.
         """
         links = {
             'shop': ('Pimoroni shop', 'https://shop.pimoroni.com/'),
@@ -91,7 +97,9 @@ def setup(bot):
     
     @bot.command(hidden=True)
     async def sudo(ctx):
-        """A secret command. You will never see this help message."""
+        """
+        A secret command. You will never see this help message.
+        """
         words = ctx.message.content.split(maxsplit=4)
         params = ['make', 'me', 'a', 'sandwich']
         foods = [':croissant:', ':hamburger:', ':stuffed_pita:', ':hotdog:', ':bread:']
@@ -107,13 +115,21 @@ def setup(bot):
     @bot.command()
     @commands.is_owner()
     async def checkauth(ctx):
-        """Test command to check whether you are authorized. (Requires authorization.)"""
+        """
+        Test command to check whether you are authorized.
+
+        (Requires authorization).
+        """
         await ctx.send('Congratulations, you are authorized.')
 
     @bot.command()
     @commands.is_owner()
     async def say(ctx, channel: TextChannel, *, message: str):
-        """Send a message to a channel. (Requires authorization.)"""
+        """
+        Send a message to a channel.
+
+        (Requires authorization).
+        """
         try:
             await channel.send(message)
         except:

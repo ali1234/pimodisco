@@ -22,10 +22,9 @@ index = search.init_index('shop.pimoroni.com.products')
 def setup(bot):
     @bot.command(aliases=['shop'])
     async def product(ctx, *, query: str = None):
-        """Search the Pimoroni store.
-
-        Usage: product <query>
-            <query> : string to search for. Spaces allowed. Returns stock level, price and link to the first hit.
+        """
+        Search the Pimoroni store.
+        Spaces allowed. Returns stock level, price and link to the first hit.
         """
         if query == None:
             await ctx.send("What do you want to search for?")

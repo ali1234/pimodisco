@@ -22,11 +22,9 @@ except Exception:
 def setup(bot):
     @bot.command()
     async def github(ctx, *, query: str = None):
-        """Get a link to a Pimoroni GitHub repository for a particular product.
-
-        Usage: github [<query>]
-           - searches the Pimoroni GitHub for a repository matching <query>.
-             If no query, prints a link to the main page.
+        """
+        Get a link to a Pimoroni GitHub repository for a particular product.
+        If no query, prints a link to the main page.
         """
         if query == None:
             await ctx.send("The Pimoroni GitHub is at: https://github.com/pimoroni")

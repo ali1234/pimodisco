@@ -81,11 +81,9 @@ def setup(bot):
 
     @bot.command()
     async def pinout(ctx, *, query: str = None):
-        """Search Pinout.xyz for a particular product.
-
-        Usage: pinout [<query>]
-           - searches Pinout.xyz for a board matching <query>.
-             If no query, prints a link to the main page.
+        """
+        Search Pinout.xyz for a particular product.
+        If no query, prints a link to the main page.
         """
         if query is None:
             await ctx.send("Pinout.xyz is at: https://pinout.xyz")
