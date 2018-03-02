@@ -26,19 +26,22 @@ def setup(bot):
         Search the Pimoroni store.
         Spaces allowed. Returns stock level, price and link to the first hit.
         """
-        if query == None:
-            await ctx.send("What do you want to search for?")
-        else:
-            try:
-                result = index.search(query, {'hitsPerPage': 1, 'attributesToRetrieve': 'title,handle,stock_description,price'})['hits']
-            except Exception:
-                await ctx.send("Sorry, there was a problem communicating with the Pimoroni store.")
-            else:
-                try:
-                    best = result[0]
-                except IndexError:
-                    await ctx.send("Sorry, I couldn't find anything matching that description.")
-                else:
-                    await ctx.send('{}, {} for £{} each, https://shop.pimoroni.com/products/{}'.format(
-                        best['title'], best['stock_description'], best['price'], best['handle']
-                    ))
+        if query is None:
+            await ctx.send("Please specify what you would like to search for.")
+            return
+
+        try:
+            result = index.search(query, {'hitsPerPage': 1, 'attributesToRetrieve': 'title,handle,stock_description,price'})['hits']
+        except Exception:
+            await ctx.send("Sorry, there was a problem communicating with the Pimoroni store.")
+            return
+
+        try:
+            best = result[0]
+        except IndexError:
+            await ctx.send("Sorry, I couldn't find anything matching that description.")
+            return
+
+        await ctx.send('{}, {} for £{} each, https://shop.pimoroni.com/products/{}'.format(
+            best['title'], best['stock_description'], best['price'], best['handle']
+        ))

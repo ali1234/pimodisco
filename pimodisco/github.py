@@ -26,22 +26,25 @@ def setup(bot):
         Get a link to a Pimoroni GitHub repository for a particular product.
         If no query, prints a link to the main page.
         """
-        if query == None:
+        if query is None:
             await ctx.send("The Pimoroni GitHub is at: https://github.com/pimoroni")
-        else:
-            try:
-                url = 'https://api.github.com/search/repositories?q=user:pimoroni+{}'.format(quote_plus(query))
-                result = requests.get(url, auth=auth).json()['items']
-            except Exception as e:
-                print(e)
-                await ctx.send("Sorry, there was a problem communicating with GitHub.")
-            else:
-                try:
-                    best = result[0]
-                except IndexError:
-                    await ctx.send("Sorry, I couldn't find anything matching that description.")
-                else:
-                    await ctx.send('{}: {}'.format(best['description'], best['html_url']))
+            return
+
+        try:
+            url = 'https://api.github.com/search/repositories?q=user:pimoroni+{}'.format(quote_plus(query))
+            result = requests.get(url, auth=auth).json()['items']
+        except Exception as e:
+            print(e)
+            await ctx.send("Sorry, there was a problem communicating with GitHub.")
+            return
+
+        try:
+            best = result[0]
+        except IndexError:
+            await ctx.send("Sorry, I couldn't find anything matching that description.")
+            return
+
+        await ctx.send('{}: {}'.format(best['description'], best['html_url']))
 
     @bot.command(hidden=True)
     @commands.is_owner()

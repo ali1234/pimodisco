@@ -28,22 +28,25 @@ def setup(bot):
         """
         if query is None:
             await ctx.send("The Pimoroni YouTube is at: https://youtube.com/pimoronilitd")
-        else:
-            try:
-                url = baseurl + '/search?part=snippet&type=video&channelId={}&maxResults=1&q={}&key={}'.format(
-                    'UCuiDNTaTdPTGZZzHm0iriGQ', quote_plus(query), api_key
-                )
-                result = requests.get(url).json()['items']
-            except Exception as e:
-                print(e)
-                await ctx.send("Sorry, there was a problem communicating with YouTube.")
-            else:
-                try:
-                    best = result[0]
-                except IndexError:
-                    await ctx.send("Sorry, I couldn't find anything matching that description.")
-                else:
-                    await ctx.send('{}: https://youtube.com/watch?v={}'.format(
-                        best['snippet']['title'], best['id']['videoId']
-                    ))
+            return
+
+        try:
+            url = baseurl + '/search?part=snippet&type=video&channelId={}&maxResults=1&q={}&key={}'.format(
+                'UCuiDNTaTdPTGZZzHm0iriGQ', quote_plus(query), api_key
+            )
+            result = requests.get(url).json()['items']
+        except Exception as e:
+            print(e)
+            await ctx.send("Sorry, there was a problem communicating with YouTube.")
+            return
+
+        try:
+            best = result[0]
+        except IndexError:
+            await ctx.send("Sorry, I couldn't find anything matching that description.")
+            return
+
+        await ctx.send('{}: https://youtube.com/watch?v={}'.format(
+            best['snippet']['title'], best['id']['videoId']
+        ))
 

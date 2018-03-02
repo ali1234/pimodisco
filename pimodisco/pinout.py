@@ -87,17 +87,20 @@ def setup(bot):
         """
         if query is None:
             await ctx.send("Pinout.xyz is at: https://pinout.xyz")
-        else:
-            try:
-                raw = get_board_raw(query)
-            except KeyError:
-                await ctx.send("Sorry, there was a problem communicating with GitHub.")
-            except IndexError:
-                await ctx.send("Sorry, I couldn't find anything matching that description.")
-            else:
-                await ctx.send('{} {}: https://pinout.xyz/pinout/{}#'.format(
-                    raw['data']['manufacturer'], raw['data']['title'], slugify(raw['data']['name'])
-                ))
+            return
+
+        try:
+            raw = get_board_raw(query)
+        except KeyError:
+            await ctx.send("Sorry, there was a problem communicating with GitHub.")
+            return
+        except IndexError:
+            await ctx.send("Sorry, I couldn't find anything matching that description.")
+            return
+
+        await ctx.send('{} {}: https://pinout.xyz/pinout/{}#'.format(
+            raw['data']['manufacturer'], raw['data']['title'], slugify(raw['data']['name'])
+        ))
 
     @bot.command(aliases=['hatstack'])
     async def phatstack(ctx):
@@ -116,51 +119,54 @@ def setup(bot):
                     return
             except IndexError:
                 await ctx.send("Please specify boards separated by '/'.")
-            else:
-                try:
-                    boards = []
-                    for q in query:
-                        q = q.strip()
-                        if q == '':
-                            continue
-                        boards.append(get_board_raw(q.strip()))
-                    if len(boards) == 0:
-                        await ctx.send("Please specify boards separated by '/'.")
-                        return
-                except KeyError:
-                    await ctx.send('Sorry, there was a problem communicating with GitHub.')
-                except IndexError:
-                    await ctx.send("Sorry, I couldn't find anything matching that description.")
-                else:
-                    overlap = defaultdict(list)
-                    for b in boards:
-                        for i in range(1, 41):
-                            if str(i) in b['data']['pin']:
-                                try:
-                                    fnc = b['data']['pin'][str(i)]['mode']
-                                except KeyError:
-                                    try:
-                                        fnc = b['data']['pin'][str(i)]['name']
-                                    except KeyError:
-                                        fnc = 'Unknown'
-                                finally:
-                                    if fnc != 'i2c':
-                                        overlap[i].append('{} ({})'.format(b['data']['title'], fnc))
+                return
 
-                    i2caddr = defaultdict(list)
-                    for b in boards:
-                        if 'i2c' in b['data']:
-                            for addr in b['data']['i2c'].keys():
-                                i2caddr[addr].append(b['data']['title'])
+            try:
+                boards = []
+                for q in query:
+                    q = q.strip()
+                    if q == '':
+                        continue
+                    boards.append(get_board_raw(q.strip()))
+                if len(boards) == 0:
+                    await ctx.send("Please specify boards separated by '/'.")
+                    return
+            except KeyError:
+                await ctx.send('Sorry, there was a problem communicating with GitHub.')
+                return
+            except IndexError:
+                await ctx.send("Sorry, I couldn't find anything matching that description.")
+                return
 
-                    await ctx.send('Selected boards:\n\n{}\n\n{}\n\n{}\n{}'.format(
-                        '\n'.join('{} {}'.format(
-                            b['data']['manufacturer'],
-                            b['data']['title']
-                        ) for b in boards),
-                        'Collisions:' if (any(len(o) > 1 for o in overlap.values()) or any(len(o) > 1 for o in i2caddr.values())) else 'Boards are compatible.',
-                        '\n'.join('Pin {}: {}'.format(k, ', '.join(v)) for k, v in overlap.items() if len(v) > 1),
-                        '\n'.join('I2C Address {}: {}'.format(k, ', '.join(v)) for k, v in i2caddr.items() if len(v) > 1)
-                    ))
+            overlap = defaultdict(list)
+            for b in boards:
+                for i in range(1, 41):
+                    if str(i) in b['data']['pin']:
+                        try:
+                            fnc = b['data']['pin'][str(i)]['mode']
+                        except KeyError:
+                            try:
+                                fnc = b['data']['pin'][str(i)]['name']
+                            except KeyError:
+                                fnc = 'Unknown'
+                        finally:
+                            if fnc != 'i2c':
+                                overlap[i].append('{} ({})'.format(b['data']['title'], fnc))
+
+            i2caddr = defaultdict(list)
+            for b in boards:
+                if 'i2c' in b['data']:
+                    for addr in b['data']['i2c'].keys():
+                        i2caddr[addr].append(b['data']['title'])
+
+            await ctx.send('Selected boards:\n\n{}\n\n{}\n\n{}\n{}'.format(
+                '\n'.join('{} {}'.format(
+                    b['data']['manufacturer'],
+                    b['data']['title']
+                ) for b in boards),
+                'Collisions:' if (any(len(o) > 1 for o in overlap.values()) or any(len(o) > 1 for o in i2caddr.values())) else 'Boards are compatible.',
+                '\n'.join('Pin {}: {}'.format(k, ', '.join(v)) for k, v in overlap.items() if len(v) > 1),
+                '\n'.join('I2C Address {}: {}'.format(k, ', '.join(v)) for k, v in i2caddr.items() if len(v) > 1)
+            ))
 
 

@@ -52,10 +52,11 @@ def setup(bot):
         Choose something from a list of options.
         """
         recommendations = ['Try', 'Go with', 'Maybe', 'Definitely', 'Consider', 'I asked @Gadgetoid and he said']
-        if len(choices) > 0:
-            await ctx.send('{} {}.'.format(random.choice(recommendations), random.choice(choices)))
-        else:
-            await ctx.send('What are the options?')
+        if not choices:
+            await ctx.send('Please give me some options to choose from.')
+            return
+
+        await ctx.send('{} {}.'.format(random.choice(recommendations), random.choice(choices)))
     
     @bot.command(aliases=['sum'])
     async def add(ctx, *numbers):
@@ -63,13 +64,18 @@ def setup(bot):
         Add a list of numbers.
         """
         messages = ['Hmmm. {}.', 'Easy. {}.', 'That would be {}.', 'That equals {}.', "That's {}. Quick maths."]
+        if not numbers:
+            await ctx.send("Please give me some numbers to add up.")
+            return
+
         # ast.literal_eval is safe for unknown inputs
         try:
             answer = sum(ast.literal_eval(n) for n in numbers)
         except Exception:
             await ctx.send("Something in there isn't a number, sorry.")
-        else:
-            await ctx.send(random.choice(messages).format(answer))
+            return
+
+        await ctx.send(random.choice(messages).format(answer))
     
     @bot.command()
     async def link(ctx, thing: str = None):
@@ -86,14 +92,15 @@ def setup(bot):
             'about': ('Pimoroni "about us" page', 'https://shop.pimoroni.com/pages/about-us')
         }
         messages = ['The {} is at: {}', "Here's a link to the {}: {}", 'The {} can be found at: {}']
-    
-        if link is None:
-            await ctx.send('Which link do you want? {}'.format(', '.join(l for l in links)))
-        else:
-            try:
-                await ctx.send(random.choice(messages).format(*links[thing]))
-            except KeyError:
-                await ctx.send("I don't know where that is. Try one of these: {}".format(', '.join(l for l in links)))
+
+        if thing is None:
+            await ctx.send("I can give you links for the following, please specify one.\n{}".format(', '.join(l for l in links)))
+            return
+
+        try:
+            await ctx.send(random.choice(messages).format(*links[thing]))
+        except KeyError:
+            await ctx.send("I don't know where that is. Try one of these: {}".format(', '.join(l for l in links)))
     
     @bot.command(hidden=True)
     async def sudo(ctx):
