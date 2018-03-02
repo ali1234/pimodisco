@@ -1,5 +1,4 @@
 import requests
-import base64
 import json
 import re
 import unicodedata
@@ -14,7 +13,6 @@ try:
 except ImportError:
     from urllib.parse import quote_plus
 
-from discord.ext import commands
 from pimodisco.github import auth
 
 

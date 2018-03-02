@@ -2,8 +2,6 @@ import os
 
 from algoliasearch import algoliasearch
 
-from discord.ext import commands
-
 try:
     cred = os.environ.get('ALGOLIA_CREDENTIALS').split(',')
 except Exception:

@@ -1,8 +1,6 @@
 import os
 import requests
 
-from discord.ext import commands
-
 try:
     from urllib import quote_plus
 except ImportError:
