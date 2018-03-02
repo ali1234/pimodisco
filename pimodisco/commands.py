@@ -4,6 +4,7 @@ import ast
 from pimodisco import version as version__
 from pimodisco import source_url
 
+from discord import TextChannel
 from discord.ext import commands
 
 def setup(bot):
@@ -109,24 +110,11 @@ def setup(bot):
         """Test command to check whether you are authorized. (Requires authorization.)"""
         await ctx.send('Congratulations, you are authorized.')
 
-# borked for now
-#    @bot.command()
-#    @commands.is_owner()
-#    async def say(ctx):
-#        """Send a ctx.message to a channel. (Requires authorization.)
-#
-#        Usage: say [<channel>] <ctx.message>
-#        Channel is optional. It must be a channel on your current server. If not
-#        specified or not found, the ctx.message will go to the current channel.
-#        """
-#        try:
-#            (_, channel, msg) = ctx.message.content.split(maxsplit=2)
-#            channel = {c.name: c for c in ctx.message.server.channels}[channel]
-#        except (KeyError, ValueError):
-#            channel = ctx.message.channel
-#            try:
-#                (_, msg) = ctx.message.content.split(maxsplit=1)
-#            except ValueError:
-#                msg = "What do you want me to say?"
-#        finally:
-#            await ctx.send(channel, msg)
+    @bot.command()
+    @commands.is_owner()
+    async def say(ctx, channel: TextChannel, *, message: str):
+        """Send a message to a channel. (Requires authorization.)"""
+        try:
+            await channel.send(message)
+        except:
+            await ctx.send("Sadly I couldn't send a message to {}".format(channel.mention))
