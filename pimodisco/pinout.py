@@ -14,7 +14,7 @@ try:
 except ImportError:
     from urllib.parse import quote_plus
 
-from pimodisco.commands import command, synonyms
+from discord.ext import commands
 from pimodisco.github import auth
 
 
@@ -76,93 +76,93 @@ def get_board_raw(query):
     yaml = requests.get(url).content
     return loads(yaml.decode('utf-8'))
 
-@command
-async def pinout(client, message):
-    """Search Pinout.xyz for a particular product.
 
-    Usage: pinout [<query>]
-       - searches Pinout.xyz for a board matching <query>.
-         If no query, prints a link to the main page.
-    """
-    try:
-        query = message.content.split(maxsplit=1)[1]
-    except IndexError:
-        await client.send_message(message.channel, "Pinout.xyz is at: https://pinout.xyz")
-    else:
-        try:
-            raw = get_board_raw(query)
-        except KeyError:
-            await client.send_message(message.channel, "Sorry, there was a problem communicating with GitHub.")
-        except IndexError:
-            await client.send_message(message.channel, "Sorry, I couldn't find anything matching that description.")
+def setup(bot):
+
+    @bot.command()
+    async def pinout(ctx, *, query: str = None):
+        """Search Pinout.xyz for a particular product.
+
+        Usage: pinout [<query>]
+           - searches Pinout.xyz for a board matching <query>.
+             If no query, prints a link to the main page.
+        """
+        if query is None:
+            await ctx.send("Pinout.xyz is at: https://pinout.xyz")
         else:
-            await client.send_message(message.channel, '{} {}: https://pinout.xyz/pinout/{}#'.format(
-                raw['data']['manufacturer'], raw['data']['title'], slugify(raw['data']['name'])
-            ) )
+            try:
+                raw = get_board_raw(query)
+            except KeyError:
+                await ctx.send("Sorry, there was a problem communicating with GitHub.")
+            except IndexError:
+                await ctx.send("Sorry, I couldn't find anything matching that description.")
+            else:
+                await ctx.send('{} {}: https://pinout.xyz/pinout/{}#'.format(
+                    raw['data']['manufacturer'], raw['data']['title'], slugify(raw['data']['name'])
+                ))
 
-@command
-@synonyms('hatstack')
-async def phatstack(client, message):
-    """Check compatibility between boards using Pinout.xyz
+    @bot.command(aliases=['hatstack'])
+    async def phatstack(ctx):
+        """Check compatibility between boards using Pinout.xyz
 
-    Usage: pinout <query> [/ <query> / ...]
-       - Supply a list of up to six boards separated with '/'.
-         A list of pin/i2c address collisions will be displayed.
-         Pinout.xyz is crowdsourced and results may be innaccurate.
-    """
-    await client.send_typing(message.channel)
-    try:
-        query = message.content.split(maxsplit=1)[1].split('/')
-        if len(query) > 6:
-            await client.send_message(message.channel, "Can't compare more than six boards.")
-            return
-    except IndexError:
-        await client.send_message(message.channel, "Please specify boards separated by '/'.")
-    else:
-        try:
-            boards = []
-            for q in query:
-                q = q.strip()
-                if q == '':
-                    continue
-                boards.append(get_board_raw(q.strip()))
-            if len(boards) == 0:
-                await client.send_message(message.channel, "Please specify boards separated by '/'.")
-                return
-        except KeyError:
-            await client.send_message(message.channel, "Sorry, there was a problem communicating with GitHub.")
-        except IndexError:
-            await client.send_message(message.channel, "Sorry, I couldn't find anything matching that description.")
-        else:
-            overlap = defaultdict(list)
-            for b in boards:
-                for i in range(1, 41):
-                    if str(i) in b['data']['pin']:
-                        try:
-                            fnc = b['data']['pin'][str(i)]['mode']
-                        except KeyError:
-                            try:
-                                fnc = b['data']['pin'][str(i)]['name']
-                            except KeyError:
-                                fnc = 'Unknown'
-                        finally:
-                            if fnc != 'i2c':
-                                overlap[i].append('{} ({})'.format(b['data']['title'], fnc))
+        Usage: pinout <query> [/ <query> / ...]
+           - Supply a list of up to six boards separated with '/'.
+             A list of pin/i2c address collisions will be displayed.
+             Pinout.xyz is crowdsourced and results may be innaccurate.
+        """
+        async with ctx.typing():
+            try:
+                query = ctx.message.content.split(maxsplit=1)[1].split('/')
+                if len(query) > 6:
+                    await ctx.send("Can't compare more than six boards.")
+                    return
+            except IndexError:
+                await ctx.send("Please specify boards separated by '/'.")
+            else:
+                try:
+                    boards = []
+                    for q in query:
+                        q = q.strip()
+                        if q == '':
+                            continue
+                        boards.append(get_board_raw(q.strip()))
+                    if len(boards) == 0:
+                        await ctx.send("Please specify boards separated by '/'.")
+                        return
+                except KeyError:
+                    await ctx.send('Sorry, there was a problem communicating with GitHub.')
+                except IndexError:
+                    await ctx.send("Sorry, I couldn't find anything matching that description.")
+                else:
+                    overlap = defaultdict(list)
+                    for b in boards:
+                        for i in range(1, 41):
+                            if str(i) in b['data']['pin']:
+                                try:
+                                    fnc = b['data']['pin'][str(i)]['mode']
+                                except KeyError:
+                                    try:
+                                        fnc = b['data']['pin'][str(i)]['name']
+                                    except KeyError:
+                                        fnc = 'Unknown'
+                                finally:
+                                    if fnc != 'i2c':
+                                        overlap[i].append('{} ({})'.format(b['data']['title'], fnc))
 
-            i2caddr = defaultdict(list)
-            for b in boards:
-                if 'i2c' in b['data']:
-                    for addr in b['data']['i2c'].keys():
-                        i2caddr[addr].append(b['data']['title'])
+                    i2caddr = defaultdict(list)
+                    for b in boards:
+                        if 'i2c' in b['data']:
+                            for addr in b['data']['i2c'].keys():
+                                i2caddr[addr].append(b['data']['title'])
 
-            await client.send_message(message.channel, '''Selected boards:\n\n{}\n\n{}\n\n{}\n{}'''.format(
-                '\n'.join('{} {}'.format(
-                    b['data']['manufacturer'],
-                    b['data']['title']
-                ) for b in boards),
-                'Collisions:' if (any(len(o) > 1 for o in overlap.values()) or any(len(o) > 1 for o in i2caddr.values())) else 'Boards are compatible.',
-                '\n'.join('Pin {}: {}'.format(k, ', '.join(v)) for k, v in overlap.items() if len(v) > 1),
-                '\n'.join('I2C Address {}: {}'.format(k, ', '.join(v)) for k, v in i2caddr.items() if len(v) > 1)
-            ))
+                    await ctx.send('Selected boards:\n\n{}\n\n{}\n\n{}\n{}'.format(
+                        '\n'.join('{} {}'.format(
+                            b['data']['manufacturer'],
+                            b['data']['title']
+                        ) for b in boards),
+                        'Collisions:' if (any(len(o) > 1 for o in overlap.values()) or any(len(o) > 1 for o in i2caddr.values())) else 'Boards are compatible.',
+                        '\n'.join('Pin {}: {}'.format(k, ', '.join(v)) for k, v in overlap.items() if len(v) > 1),
+                        '\n'.join('I2C Address {}: {}'.format(k, ', '.join(v)) for k, v in i2caddr.items() if len(v) > 1)
+                    ))
 
 

@@ -7,8 +7,8 @@ can!
 
 # Install
 
-Run `pip3 install .` from the root of the repository to install
-pimodisco and all dependencies.
+Run `pip3 install -r requirements.txt` from the root of the repository
+to install pimodisco and all dependencies.
 
 
 # Running
