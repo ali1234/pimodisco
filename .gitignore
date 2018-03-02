@@ -3,3 +3,5 @@ discord.txt
 algolia.txt
 youtube.txt
 github.txt
+*.pyc
+__pycache__
