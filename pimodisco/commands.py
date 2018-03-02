@@ -7,7 +7,9 @@ from pimodisco import source_url
 from discord import TextChannel
 from discord.ext import commands
 
+
 def setup(bot):
+
     @bot.command(aliases=['hi'])
     async def hello(ctx):
         """
@@ -23,21 +25,21 @@ def setup(bot):
         """
         goodbyes = ['Goodbye', 'See you', 'Later', 'Tata']
         await ctx.send('{} {}!'.format(random.choice(goodbyes), ctx.author.mention))
-    
+
     @bot.command()
     async def version(ctx):
         """
         Says the currently active version of the bot.
         """
         await ctx.send('Version {}'.format(version__))
-    
+
     @bot.command(aliases=['source'])
     async def code(ctx):
         """
         Prints a link to the bot's code.
         """
         await ctx.send("Here's a link to my source code: {}".format(source_url))
-    
+
     @bot.command()
     async def roll(ctx, sides: int = 6):
         """
@@ -45,7 +47,7 @@ def setup(bot):
         """
         roll = random.randint(1, sides)
         await ctx.send('{} rolled!'.format(roll))
-    
+
     @bot.command()
     async def choose(ctx, *choices):
         """
@@ -57,7 +59,7 @@ def setup(bot):
             return
 
         await ctx.send('{} {}.'.format(random.choice(recommendations), random.choice(choices)))
-    
+
     @bot.command(aliases=['sum'])
     async def add(ctx, *numbers):
         """
@@ -76,7 +78,7 @@ def setup(bot):
             return
 
         await ctx.send(random.choice(messages).format(answer))
-    
+
     @bot.command()
     async def link(ctx, thing: str = None):
         """
@@ -101,7 +103,7 @@ def setup(bot):
             await ctx.send(random.choice(messages).format(*links[thing]))
         except KeyError:
             await ctx.send("I don't know where that is. Try one of these: {}".format(', '.join(l for l in links)))
-    
+
     @bot.command(hidden=True)
     async def sudo(ctx):
         """
@@ -111,14 +113,13 @@ def setup(bot):
         params = ['make', 'me', 'a', 'sandwich']
         foods = [':croissant:', ':hamburger:', ':stuffed_pita:', ':hotdog:', ':bread:']
         ctx.messages = ['How about a {} instead?', 'Best I can do is {}']
-    
+
         if len(words) == 5 and all(words[n+1] == params[n] for n in range(3)):
             if str(ctx.author) == 'Ryanteck#1989':
                 await ctx.send("Okay {}, you're a sandwich.".format(ctx.author.mention))
             else:
                 await ctx.send(random.choice(ctx.messages).format(random.choice(foods)))
 
-    
     @bot.command()
     @commands.is_owner()
     async def checkauth(ctx):

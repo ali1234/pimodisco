@@ -20,6 +20,7 @@ if not api_key:
 
 
 def setup(bot):
+
     @bot.command()
     async def youtube(ctx, *, query: str = None):
         """
@@ -49,4 +50,3 @@ def setup(bot):
         await ctx.send('{}: https://youtube.com/watch?v={}'.format(
             best['snippet']['title'], best['id']['videoId']
         ))
-

@@ -20,6 +20,7 @@ except Exception:
 
 
 def setup(bot):
+
     @bot.command()
     async def github(ctx, *, query: str = None):
         """

@@ -19,7 +19,9 @@ search = algoliasearch.Client(*cred)
 search._transport.session.headers.update({'Referer': 'https://shop.pimoroni.com/'})
 index = search.init_index('shop.pimoroni.com.products')
 
+
 def setup(bot):
+
     @bot.command(aliases=['shop'])
     async def product(ctx, *, query: str = None):
         """
