@@ -21,14 +21,14 @@ if not api_key:
 
 def setup(bot):
     @bot.command()
-    async def youtube(ctx, query: str = None):
+    async def youtube(ctx, *, query: str = None):
         """Search the Pimoroni YouTube channel.
 
         Usage: youtube [<query>]
            - searches the Pimoroni YouTube for a video matching <query>.
              If no query, prints a link to the main channel.
         """
-        if query == None:
+        if query is None:
             await ctx.send("The Pimoroni YouTube is at: https://youtube.com/pimoronilitd")
         else:
             try:
