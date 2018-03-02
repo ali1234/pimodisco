@@ -32,23 +32,23 @@ def setup(bot):
     @bot.command()
     async def roll(ctx, sides: int = 6):
         """Roll a n-sided die. (Default 6)"""
-        roll = str(random.randint(1, sides))
+        roll = random.randint(1, sides)
         await ctx.send('{} rolled!'.format(roll))
     
     @bot.command()
-    async def choose(ctx, *args):
+    async def choose(ctx, *choices):
         """Choose something from a list of options.
     
         Usage: choose <option> [<option> ...]
         """
         recommendations = ['Try', 'Go with', 'Maybe', 'Definitely', 'Consider', 'I asked @Gadgetoid and he said']
-        if len(args) > 0:
-            await ctx.send('{} {}.'.format(random.choice(recommendations), random.choice(args)))
+        if len(choices) > 0:
+            await ctx.send('{} {}.'.format(random.choice(recommendations), random.choice(choices)))
         else:
             await ctx.send('What are the options?')
     
     @bot.command(aliases=['sum'])
-    async def add(ctx, *args):
+    async def add(ctx, *numbers):
         """Add a list of numbers.
     
         Usage: add [<number> ...]
@@ -56,7 +56,7 @@ def setup(bot):
         messages = ['Hmmm. {}.', 'Easy. {}.', 'That would be {}.', 'That equals {}.', "That's {}. Quick maths."]
         # ast.literal_eval is safe for unknown inputs
         try:
-            answer = sum(ast.literal_eval(n) for n in args)
+            answer = sum(ast.literal_eval(n) for n in numbers)
         except Exception:
             await ctx.send("Something in there isn't a number, sorry.")
         else:
