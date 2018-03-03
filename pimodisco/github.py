@@ -8,6 +8,8 @@ except ImportError:
 
 from discord.ext import commands
 
+from pimodisco.checks import authCheck
+
 try:
     auth = HTTPBasicAuth(*os.environ.get('GITHUB_CREDENTIALS').split(','))
 except Exception:
@@ -48,7 +50,7 @@ def setup(bot):
         await ctx.send('{}: {}'.format(best['description'], best['html_url']))
 
     @bot.command(hidden=True)
-    @commands.is_owner()
+    @commands.check(authCheck)
     async def ratelimit(ctx):
         rl = requests.get('https://api.github.com/rate_limit', auth=auth).json()
         await ctx.send(rl)

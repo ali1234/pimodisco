@@ -3,6 +3,7 @@ import ast
 
 from pimodisco import version as version__
 from pimodisco import source_url
+from pimodisco.checks import authCheck
 
 from discord import TextChannel
 from discord.ext import commands
@@ -121,7 +122,7 @@ def setup(bot):
                 await ctx.send(random.choice(ctx.messages).format(random.choice(foods)))
 
     @bot.command()
-    @commands.is_owner()
+    @commands.check(authCheck)
     async def checkauth(ctx):
         """
         Test command to check whether you are authorized.
@@ -131,7 +132,7 @@ def setup(bot):
         await ctx.send('Congratulations, you are authorized.')
 
     @bot.command()
-    @commands.is_owner()
+    @commands.check(authCheck)
     async def say(ctx, channel: TextChannel, *, message: str):
         """
         Send a message to a channel.
