@@ -1,4 +1,5 @@
 import os
+import requests
 
 from algoliasearch import algoliasearch
 
@@ -32,16 +33,22 @@ def setup(bot):
 
         try:
             result = index.search(query, {'hitsPerPage': 1, 'attributesToRetrieve': 'title,handle,stock_description,price'})['hits']
+            best = result[0]
+            url = 'https://shop.pimoroni.com/products/{}.json'.format(best['handle'])
+            json = requests.get(url).json()
+            stock = json['product']['variants'][0]['inventory_quantity']
+            vendor = json['product']['vendor']
+            if stock > 0:
+                stock_msg = '{} in stock'.format(stock)
+            else:
+                stock_msg = 'out of stock'
         except Exception:
             await ctx.send("Sorry, there was a problem communicating with the Pimoroni store.")
             return
-
-        try:
-            best = result[0]
         except IndexError:
             await ctx.send("Sorry, I couldn't find anything matching that description.")
             return
 
-        await ctx.send('{}, {} for £{} each, https://shop.pimoroni.com/products/{}'.format(
-            best['title'], best['stock_description'], best['price'], best['handle']
+        await ctx.send('{} by {}, {}, £{} each, https://shop.pimoroni.com/products/{}'.format(
+            best['title'], vendor, stock_msg, best['price'], best['handle']
         ))
