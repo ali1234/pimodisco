@@ -1,25 +1,24 @@
-import os
 import requests
 
 from algoliasearch import algoliasearch
 
-try:
-    cred = os.environ.get('ALGOLIA_CREDENTIALS').split(',')
-except Exception:
-    try:
-        cred = open('algolia.txt').read().strip().split(',')
-    except Exception:
-        print('Please put algolia credentials in algolia.txt or set the environment variable ALGOLIA_CREDENTIALS, as "app_id,api_key".')
-        raise ImportError
+import logging
+logger = logging.getLogger(__name__)
 
 
-search = algoliasearch.Client(*cred)
-# algolia refuses service if referer is wrong. lol.
-search._transport.session.headers.update({'Referer': 'https://shop.pimoroni.com/'})
-index = search.init_index('shop.pimoroni.com.products')
+def setup_args(parser):
+    parser.add_argument('-a', '--algolia', type=str, nargs=2, metavar=('APP_ID', 'API_KEY'), default=None, env_var='ALGOLIA_CREDENTIALS', help='Algolia credentials.')
 
 
-def setup(bot):
+def setup(bot, args):
+    if args.algolia is None:
+        logger.warning('No Algolia credentials supplied. Product search is disabled.')
+        return
+    else:
+        search = algoliasearch.Client(*args.algolia)
+        # algolia refuses service if referer is wrong. lol.
+        search._transport.session.headers.update({'Referer': 'https://shop.pimoroni.com/'})
+        index = search.init_index('shop.pimoroni.com.products')
 
     @bot.command(aliases=['shop'])
     async def product(ctx, *, query: str = None):
@@ -42,11 +41,12 @@ def setup(bot):
                 stock_msg = '{} in stock'.format(stock)
             else:
                 stock_msg = 'out of stock'
-        except Exception:
-            await ctx.send("Sorry, there was a problem communicating with the Pimoroni store.")
-            return
         except IndexError:
             await ctx.send("Sorry, I couldn't find anything matching that description.")
+            return
+        except Exception as e:
+            logger.error(e)
+            await ctx.send("Sorry, there was a problem communicating with the Pimoroni store.")
             return
 
         await ctx.send('{} by {}, {}, £{} each, https://shop.pimoroni.com/products/{}'.format(

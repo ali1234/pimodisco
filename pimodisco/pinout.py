@@ -13,7 +13,7 @@ try:
 except ImportError:
     from urllib.parse import quote_plus
 
-from pimodisco.github import auth
+import pimodisco.github
 
 
 def slugify(value):
@@ -69,13 +69,17 @@ def loads(markson):
 def get_board_raw(query):
     url = 'https://api.github.com/search/code?q=repo:gadgetoid/pinout.xyz+path:src/en/overlay+{}'.format(
         quote_plus(query))
-    result = requests.get(url, auth=auth).json()['items']
+    result = requests.get(url, auth=pimodisco.github.auth).json()['items']
     url = 'https://api.pinout.xyz/v1/md/{}'.format(pathlib.Path(result[0]['path']).name)
     yaml = requests.get(url).content
     return loads(yaml.decode('utf-8'))
 
 
-def setup(bot):
+def setup_args(parser):
+    pass
+
+
+def setup(bot, args):
 
     @bot.command()
     async def pinout(ctx, *, query: str = None):

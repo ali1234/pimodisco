@@ -1,17 +1,13 @@
+import logging
+logger = logging.getLogger(__name__)
+
+from importlib import import_module
+from configargparse import ArgumentParser
 from discord.ext.commands import AutoShardedBot
-import os
 
-from pimodisco.filter import filter
-
-token = os.environ.get('DISCORD_BOT_TOKEN')
-if not token:
-    try:
-        token = open('discord.txt').read().strip()
-    except Exception:
-        print('Please put Discord bot token in discord.txt or set the environment variable DISCORD_BOT_TOKEN.')
-        exit(-1)
 
 extensions = [
+    'pimodisco.checks',
     'pimodisco.commands',
     'pimodisco.github',
     'pimodisco.pinout',
@@ -21,14 +17,21 @@ extensions = [
 
 
 def main():
-    bot = AutoShardedBot(command_prefix='!')
-    for extension in extensions:
-        try:
-            bot.load_extension(extension)
-        except ImportError:
-            print('Extension {} failed to load. It has been disabled.'.format(extension))
-            pass
-    bot.run(token)
+    parser = ArgumentParser()
+    parser.add_argument('-c', '--config', required=True, is_config_file=True, help='Config file path.')
+    parser.add_argument('-t', '--token', metavar='DISCORD_BOT_TOKEN', required=True, env_var='DISCORD_BOT_TOKEN', help='Discord bot token.')
+    parser.add_argument('-p', '--prefix', metavar='COMMAND_PREFIX', default='!', env_var='COMMAND_PREFIX', help='Command prefix.')
+
+    loaded_extensions = [import_module(e) for e in extensions]
+    for e in loaded_extensions:
+        e.setup_args(parser)
+
+    args = parser.parse_args()
+
+    bot = AutoShardedBot(command_prefix=args.prefix)
+    for e in loaded_extensions:
+        e.setup(bot, args)
+    bot.run(args.token)
 
 if __name__ == '__main__':
     main()

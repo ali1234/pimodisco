@@ -9,7 +9,11 @@ from discord import TextChannel
 from discord.ext import commands
 
 
-def setup(bot):
+def setup_args(parser):
+    pass
+
+
+def setup(bot, args):
 
     @bot.command(aliases=['hi'])
     async def hello(ctx):

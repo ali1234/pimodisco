@@ -1,7 +1,5 @@
 .idea
-discord.txt
-algolia.txt
-youtube.txt
-github.txt
+pimodisco.conf
 *.pyc
+*.swp
 __pycache__

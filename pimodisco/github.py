@@ -1,6 +1,9 @@
 import requests
 from requests.auth import HTTPBasicAuth
 
+import logging
+logger = logging.getLogger(__name__)
+
 try:
     from urllib import quote_plus
 except ImportError:
@@ -10,18 +13,20 @@ from discord.ext import commands
 
 from pimodisco.checks import authCheck
 
-try:
-    auth = HTTPBasicAuth(*os.environ.get('GITHUB_CREDENTIALS').split(','))
-except Exception:
-    try:
-        auth = HTTPBasicAuth(*open('github.txt').read().strip().split(','))
-    except Exception:
-        print('Please put GitHub credentials in github.txt or set the environment variable GITHUB_CREDENTIALS, as "user,api_key".')
-        print('GitHub will be rate limited.')
-        auth = None
+
+auth = None
 
 
-def setup(bot):
+def setup_args(parser):
+    parser.add_argument('-g', '--github', nargs=2, type=str, metavar=('USER','API_KEY'), default=None, env_var='GITHUB_CREDENTIALS', help='GitHub credentials.')
+
+
+def setup(bot, args):
+    global auth
+    if args.github is None:
+        logger.warning('No GitHub credentials supplied. GitHub searches will be rate limited.')
+    else:
+        auth = HTTPBasicAuth(*args.github)
 
     @bot.command()
     async def github(ctx, *, query: str = None):

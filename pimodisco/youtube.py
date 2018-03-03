@@ -1,5 +1,7 @@
-import os
 import requests
+
+import logging
+logger = logging.getLogger(__name__)
 
 try:
     from urllib import quote_plus
@@ -8,16 +10,16 @@ except ImportError:
 
 baseurl = 'https://www.googleapis.com/youtube/v3'
 
-api_key = os.environ.get('YOUTUBE_SERVER_API_KEY')
-if not api_key:
-    try:
-        api_key = open('youtube.txt').read().strip()
-    except Exception:
-        print('Please put Youtube API key in youtube.txt or set the environment variable YOUTUBE_SERVER_API_KEY.')
-        raise ImportError
+
+def setup_args(parser):
+    parser.add_argument('-y', '--youtube', metavar='API_KEY', default=None, env_var='YOUTUBE_SERVER_API_KEY', help='Youtube API key.')
 
 
-def setup(bot):
+def setup(bot, args):
+    if args.youtube is None:
+        logger.warning('No Youtube API key supplied. Youtube search is disabled.')
+        return
+
 
     @bot.command()
     async def youtube(ctx, *, query: str = None):
@@ -31,7 +33,7 @@ def setup(bot):
 
         try:
             url = baseurl + '/search?part=snippet&type=video&channelId={}&maxResults=1&q={}&key={}'.format(
-                'UCuiDNTaTdPTGZZzHm0iriGQ', quote_plus(query), api_key
+                'UCuiDNTaTdPTGZZzHm0iriGQ', quote_plus(query), args.youtube
             )
             result = requests.get(url).json()['items']
         except Exception as e:
