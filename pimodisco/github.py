@@ -16,7 +16,8 @@ from pimodisco.checks import authCheck
 
 
 def setup_args(parser):
-    parser.add_argument('-g', '--github', nargs=2, type=str, metavar=('USER','API_KEY'), default=None, env_var='GITHUB_CREDENTIALS', help='GitHub credentials.')
+    parser.add_argument('-g', '--github', nargs=2, type=str, metavar=('USER','API_KEY'),
+                        default=None, env_var='GITHUB_CREDENTIALS', help='GitHub credentials.')
 
 
 def setup(bot, args):
@@ -37,8 +38,8 @@ def setup(bot, args):
             return
 
         try:
-            url = 'https://api.github.com/search/repositories?q=user:pimoroni+{}'.format(quote_plus(query))
-            async with bot.aiohttp.get(url, auth=auth) as repl:
+            url = 'https://api.github.com/search/repositories?q=user:pimoroni+{}'
+            async with bot.aiohttp.get(url.format(quote_plus(query)), auth=auth) as repl:
                 best = (await repl.json())['items'][0]
         except IndexError:
             await ctx.send("Sorry, I couldn't find anything matching that description.")

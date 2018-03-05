@@ -6,11 +6,10 @@ try:
 except ImportError:
     from urllib.parse import quote_plus
 
-baseurl = 'https://www.googleapis.com/youtube/v3'
-
 
 def setup_args(parser):
-    parser.add_argument('-y', '--youtube', metavar='API_KEY', default=None, env_var='YOUTUBE_SERVER_API_KEY', help='Youtube API key.')
+    parser.add_argument('-y', '--youtube', metavar='API_KEY', default=None,
+                        env_var='YOUTUBE_SERVER_API_KEY', help='Youtube API key.')
 
 
 def setup(bot, args):
@@ -30,10 +29,8 @@ def setup(bot, args):
             return
 
         try:
-            url = baseurl + '/search?part=snippet&type=video&channelId={}&maxResults=1&q={}&key={}'.format(
-                'UCuiDNTaTdPTGZZzHm0iriGQ', quote_plus(query), args.youtube
-            )
-            async with bot.aiohttp.get(url) as repl:
+            url = 'https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&channelId={}&maxResults=1&q={}&key={}'
+            async with bot.aiohttp.get(url.format('UCuiDNTaTdPTGZZzHm0iriGQ', quote_plus(query), args.youtube)) as repl:
                 best = (await repl.json())['items'][0]
         except IndexError:
             await ctx.send("Sorry, I couldn't find anything matching that description.")

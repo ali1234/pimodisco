@@ -5,7 +5,8 @@ logger = logging.getLogger(__name__)
 
 
 def setup_args(parser):
-    parser.add_argument('-a', '--algolia', type=str, nargs=2, metavar=('APP_ID', 'API_KEY'), default=None, env_var='ALGOLIA_CREDENTIALS', help='Algolia credentials.')
+    parser.add_argument('-a', '--algolia', type=str, nargs=2, metavar=('APP_ID', 'API_KEY'),
+                        default=None, env_var='ALGOLIA_CREDENTIALS', help='Algolia credentials.')
 
 
 def setup(bot, args):
@@ -31,8 +32,8 @@ def setup(bot, args):
         try:
             result = index.search(query, {'hitsPerPage': 1, 'attributesToRetrieve': 'title,handle,stock_description,price'})['hits']
             best = result[0]
-            url = 'https://shop.pimoroni.com/products/{}.json'.format(best['handle'])
-            async with bot.aiohttp.get(url) as repl:
+            url = 'https://shop.pimoroni.com/products/{}.json'
+            async with bot.aiohttp.get(url.format(best['handle'])) as repl:
                 json = await repl.json()
             stock = json['product']['variants'][0]['inventory_quantity']
             vendor = json['product']['vendor']

@@ -70,9 +70,8 @@ def loads(markson):
     return {'data':_data, 'html':_html}
 
 async def get_board_raw(query, session, auth):
-    url = 'https://api.github.com/search/code?q=repo:gadgetoid/pinout.xyz+path:src/en/overlay+{}'.format(
-        quote_plus(query))
-    async with session.get(url, auth=auth) as repl:
+    url = 'https://api.github.com/search/code?q=repo:gadgetoid/pinout.xyz+path:src/en/overlay+{}'
+    async with session.get(url.format(quote_plus(query)), auth=auth) as repl:
         result = (await repl.json())['items']
 
     url = 'https://api.pinout.xyz/v1/md/{}'.format(pathlib.Path(result[0]['path']).name)
