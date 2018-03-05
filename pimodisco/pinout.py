@@ -1,9 +1,14 @@
+from aiohttp import BasicAuth
+
 import json
 import re
 import unicodedata
 import markdown
 import yaml
 import pathlib
+
+import logging
+logger = logging.getLogger(__name__)
 
 from collections import defaultdict
 
@@ -12,7 +17,6 @@ try:
 except ImportError:
     from urllib.parse import quote_plus
 
-import pimodisco.github
 
 
 def slugify(value):
@@ -65,10 +69,10 @@ def loads(markson):
 
     return {'data':_data, 'html':_html}
 
-async def get_board_raw(query, session):
+async def get_board_raw(query, session, auth):
     url = 'https://api.github.com/search/code?q=repo:gadgetoid/pinout.xyz+path:src/en/overlay+{}'.format(
         quote_plus(query))
-    async with session.get(url, auth=pimodisco.github.auth) as repl:
+    async with session.get(url, auth=auth) as repl:
         result = (await repl.json())['items']
 
     url = 'https://api.pinout.xyz/v1/md/{}'.format(pathlib.Path(result[0]['path']).name)
@@ -82,6 +86,11 @@ def setup_args(parser):
 
 
 def setup(bot, args):
+    if args.github is None:
+        logger.warning('No GitHub credentials supplied. GitHub searches will be rate limited.')
+        auth = None
+    else:
+        auth = BasicAuth(*args.github)
 
     @bot.command()
     async def pinout(ctx, *, query: str = None):
@@ -94,7 +103,7 @@ def setup(bot, args):
             return
 
         try:
-            raw = await get_board_raw(query, bot.aiohttp)
+            raw = await get_board_raw(query, bot.aiohttp, auth)
         except KeyError:
             await ctx.send("Sorry, there was a problem communicating with GitHub.")
             return
@@ -131,7 +140,7 @@ def setup(bot, args):
                     q = q.strip()
                     if q == '':
                         continue
-                    boards.append(await get_board_raw(q.strip(), bot.aiohttp))
+                    boards.append(await get_board_raw(q.strip(), bot.aiohttp, auth))
                 if len(boards) == 0:
                     await ctx.send("Please specify boards separated by '/'.")
                     return

@@ -13,7 +13,6 @@ from discord.ext import commands
 from pimodisco.checks import authCheck
 
 
-auth = None
 
 
 def setup_args(parser):
@@ -21,9 +20,9 @@ def setup_args(parser):
 
 
 def setup(bot, args):
-    global auth
     if args.github is None:
         logger.warning('No GitHub credentials supplied. GitHub searches will be rate limited.')
+        auth = None
     else:
         auth = BasicAuth(*args.github)
 
