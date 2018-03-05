@@ -4,7 +4,7 @@ logger = logging.getLogger(__name__)
 import aiohttp
 from importlib import import_module
 from configargparse import ArgumentParser
-from discord.ext.commands import AutoShardedBot
+from discord.ext.commands import Bot
 
 from pimodisco import source_url, version as version__
 
@@ -42,9 +42,12 @@ def main():
 
     args = parser.parse_args()
 
+    bot = Bot(
+                command_prefix=args.prefix,
+                description=description.format(version__, args.prefix, source_url)
+             )
+
     with aiohttp.ClientSession() as session:
-        bot = AutoShardedBot(command_prefix=args.prefix,
-                             description=description.format(version__, args.prefix, source_url))
         bot.aiohttp = session
         for e in loaded_extensions:
             e.setup(bot, args)
