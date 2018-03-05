@@ -20,6 +20,7 @@ description="""
 """
 
 extensions = [
+    'pimodisco.filter',
     'pimodisco.checks',
     'pimodisco.commands',
     'pimodisco.github',

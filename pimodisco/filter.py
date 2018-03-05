@@ -14,7 +14,7 @@ class historybuffer(deque):
         self.append(message)
         if len(self) < self.maxlen:
             return False
-        return (self[-1].timestamp - self[0].timestamp) < datetime.timedelta(seconds = self.maxlen)
+        return (self[-1].created_at - self[0].created_at) < datetime.timedelta(seconds = self.maxlen)
 
 history = defaultdict(historybuffer)
 last_warning = datetime.datetime.now()
@@ -37,37 +37,47 @@ class ProfanityFilter(object):
         return self.regex.search(ascii)
 
 
-pf = ProfanityFilter()
-
-async def filter(client, message):
-    global last_warning
-    global history
-
-    msg_time = datetime.datetime.now()
-
-    if history[str(message.author)].too_fast(message):
-        await client.delete_message(message)
-
-        if msg_time - last_warning > datetime.timedelta(seconds=5):
-            bot_message = await client.send_message(message.channel,
-                                                "{}, please do not send spam!".format(message.author.mention))
-            last_warning = msg_time
-            await asyncio.sleep(4)
-            await client.delete_message(bot_message)
-
-        return True
+def setup_args(parser):
+    parser.add_argument('-m', '--moderation', action='store_true', help='Turn on profanity filter and spam rate limiting.')
 
 
-    # Profanity Filter
-    if pf.is_profane(message.content):
-        await client.delete_message(message)
-        bot_message = await client.send_message(message.channel,
-                                                "Please refrain from using profanity {}.".format(message.author.mention))
-        await asyncio.sleep(5)
-        await client.delete_message(bot_message)
-        return True
+def setup(bot, args):
 
-    return False
+    if not args.moderation:
+        return
+
+    pf = ProfanityFilter()
+
+    @bot.listen('on_message')
+    async def filter(message):
+        global last_warning
+        global history
+
+        msg_time = datetime.datetime.now()
+
+        if history[str(message.author)].too_fast(message):
+            await message.delete()
+
+            if msg_time - last_warning > datetime.timedelta(seconds=5):
+                bot_message = await message.channel.send(
+                                            "{}, please do not send spam!".format(message.author.mention))
+                last_warning = msg_time
+                await asyncio.sleep(4)
+                await bot_message.delete()
+
+            return True
+
+
+        # Profanity Filter
+        if pf.is_profane(message.content):
+            await message.delete()
+            bot_message = await message.channel.send(
+                                            "Please refrain from using profanity {}.".format(message.author.mention))
+            await asyncio.sleep(5)
+            await bot_message.delete()
+            return True
+
+        return False
 
 
 if __name__ == '__main__':
