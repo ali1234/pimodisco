@@ -1,8 +1,7 @@
 import random
 import ast
 
-from pimodisco import version as version__
-from pimodisco import source_url
+from pimodisco import source_url, version as version__
 from pimodisco.checks import authCheck
 
 from discord import TextChannel

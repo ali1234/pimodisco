@@ -5,6 +5,18 @@ from importlib import import_module
 from configargparse import ArgumentParser
 from discord.ext.commands import AutoShardedBot
 
+from pimodisco import source_url, version as version__
+
+
+description="""
+    A good ol' Pimoroni Robot (Pirated, of course)
+    Version {}
+
+    Commands should be prefixed with '{}' and are not case sensitive.
+
+    The source code for the Pimoroni Bot can be found here:
+        {}
+"""
 
 extensions = [
     'pimodisco.checks',
@@ -28,7 +40,8 @@ def main():
 
     args = parser.parse_args()
 
-    bot = AutoShardedBot(command_prefix=args.prefix)
+    bot = AutoShardedBot(command_prefix=args.prefix,
+                         description=description.format(version__, args.prefix, source_url))
     for e in loaded_extensions:
         e.setup(bot, args)
     bot.run(args.token)
