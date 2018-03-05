@@ -1,5 +1,4 @@
-import requests
-from requests.auth import HTTPBasicAuth
+from aiohttp import BasicAuth
 
 import logging
 logger = logging.getLogger(__name__)
@@ -26,7 +25,7 @@ def setup(bot, args):
     if args.github is None:
         logger.warning('No GitHub credentials supplied. GitHub searches will be rate limited.')
     else:
-        auth = HTTPBasicAuth(*args.github)
+        auth = BasicAuth(*args.github)
 
     @bot.command()
     async def github(ctx, *, query: str = None):
@@ -40,7 +39,8 @@ def setup(bot, args):
 
         try:
             url = 'https://api.github.com/search/repositories?q=user:pimoroni+{}'.format(quote_plus(query))
-            result = requests.get(url, auth=auth).json()['items']
+            async with bot.aiohttp.get(url, auth=auth) as repl:
+                result = (await repl.json())['items']
         except Exception as e:
             print(e)
             await ctx.send("Sorry, there was a problem communicating with GitHub.")
@@ -57,5 +57,6 @@ def setup(bot, args):
     @bot.command(hidden=True)
     @commands.check(authCheck)
     async def ratelimit(ctx):
-        rl = requests.get('https://api.github.com/rate_limit', auth=auth).json()
+        async with bot.aiohttp.get('https://api.github.com/rate_limit', auth=auth) as resp:
+            rl = await resp.json()
         await ctx.send(rl)

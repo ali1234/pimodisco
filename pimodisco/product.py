@@ -1,5 +1,3 @@
-import requests
-
 from algoliasearch import algoliasearch
 
 import logging
@@ -34,7 +32,8 @@ def setup(bot, args):
             result = index.search(query, {'hitsPerPage': 1, 'attributesToRetrieve': 'title,handle,stock_description,price'})['hits']
             best = result[0]
             url = 'https://shop.pimoroni.com/products/{}.json'.format(best['handle'])
-            json = requests.get(url).json()
+            async with bot.aiohttp.get(url) as repl:
+                json = await repl.json()
             stock = json['product']['variants'][0]['inventory_quantity']
             vendor = json['product']['vendor']
             if stock > 0:

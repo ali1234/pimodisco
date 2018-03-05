@@ -1,5 +1,3 @@
-import requests
-
 import logging
 logger = logging.getLogger(__name__)
 
@@ -35,7 +33,8 @@ def setup(bot, args):
             url = baseurl + '/search?part=snippet&type=video&channelId={}&maxResults=1&q={}&key={}'.format(
                 'UCuiDNTaTdPTGZZzHm0iriGQ', quote_plus(query), args.youtube
             )
-            result = requests.get(url).json()['items']
+            async with bot.aiohttp.get(url) as repl:
+                result = (await repl.json())['items']
         except Exception as e:
             print(e)
             await ctx.send("Sorry, there was a problem communicating with YouTube.")
