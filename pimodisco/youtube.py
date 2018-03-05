@@ -34,17 +34,13 @@ def setup(bot, args):
                 'UCuiDNTaTdPTGZZzHm0iriGQ', quote_plus(query), args.youtube
             )
             async with bot.aiohttp.get(url) as repl:
-                result = (await repl.json())['items']
-        except Exception as e:
-            print(e)
-            await ctx.send("Sorry, there was a problem communicating with YouTube.")
-            return
-
-        try:
-            best = result[0]
+                best = (await repl.json())['items'][0]
         except IndexError:
             await ctx.send("Sorry, I couldn't find anything matching that description.")
             return
+        except Exception as e:
+            await ctx.send("Sorry, there was a problem communicating with YouTube.")
+            raise
 
         await ctx.send('{}: https://youtube.com/watch?v={}'.format(
             best['snippet']['title'], best['id']['videoId']

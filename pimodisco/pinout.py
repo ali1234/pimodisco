@@ -135,12 +135,12 @@ def setup(bot, args):
                 if len(boards) == 0:
                     await ctx.send("Please specify boards separated by '/'.")
                     return
-            except KeyError:
-                await ctx.send('Sorry, there was a problem communicating with GitHub.')
-                return
             except IndexError:
                 await ctx.send("Sorry, I couldn't find anything matching that description.")
                 return
+            except Exception as e:
+                await ctx.send('Sorry, there was a problem communicating with GitHub.')
+                raise
 
             overlap = defaultdict(list)
             for b in boards:

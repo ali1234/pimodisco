@@ -40,17 +40,13 @@ def setup(bot, args):
         try:
             url = 'https://api.github.com/search/repositories?q=user:pimoroni+{}'.format(quote_plus(query))
             async with bot.aiohttp.get(url, auth=auth) as repl:
-                result = (await repl.json())['items']
-        except Exception as e:
-            print(e)
-            await ctx.send("Sorry, there was a problem communicating with GitHub.")
-            return
-
-        try:
-            best = result[0]
+                best = (await repl.json())['items'][0]
         except IndexError:
             await ctx.send("Sorry, I couldn't find anything matching that description.")
             return
+        except Exception as e:
+            await ctx.send("Sorry, there was a problem communicating with GitHub.")
+            raise
 
         await ctx.send('{}: {}'.format(best['description'], best['html_url']))
 

@@ -44,9 +44,8 @@ def setup(bot, args):
             await ctx.send("Sorry, I couldn't find anything matching that description.")
             return
         except Exception as e:
-            logger.error(e)
             await ctx.send("Sorry, there was a problem communicating with the Pimoroni store.")
-            return
+            raise
 
         await ctx.send('{} by {}, {}, £{} each, https://shop.pimoroni.com/products/{}'.format(
             best['title'], vendor, stock_msg, best['price'], best['handle']
