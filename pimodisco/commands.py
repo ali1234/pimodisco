@@ -108,22 +108,6 @@ def setup(bot, args):
         except KeyError:
             await ctx.send("I don't know where that is. Try one of these: {}".format(', '.join(l for l in links)))
 
-    @bot.command(hidden=True)
-    async def sudo(ctx):
-        """
-        A secret command. You will never see this help message.
-        """
-        words = ctx.message.content.split(maxsplit=4)
-        params = ['make', 'me', 'a', 'sandwich']
-        foods = [':croissant:', ':hamburger:', ':stuffed_pita:', ':hotdog:', ':bread:']
-        ctx.messages = ['How about a {} instead?', 'Best I can do is {}']
-
-        if len(words) == 5 and all(words[n+1] == params[n] for n in range(3)):
-            if str(ctx.author) == 'Ryanteck#1989':
-                await ctx.send("Okay {}, you're a sandwich.".format(ctx.author.mention))
-            else:
-                await ctx.send(random.choice(ctx.messages).format(random.choice(foods)))
-
     @bot.command()
     @commands.check(authCheck)
     async def checkauth(ctx):
