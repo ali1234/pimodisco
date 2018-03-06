@@ -7,6 +7,7 @@ from configargparse import ArgumentParser
 from discord.ext.commands import Bot
 
 from pimodisco import source_url, version as version__
+from pimodisco.formatter import Formatter
 
 
 description="""
@@ -43,7 +44,7 @@ def main():
     args = parser.parse_args()
 
     bot = Bot(
-                command_prefix=args.prefix,
+                command_prefix=args.prefix, formatter=Formatter(),
                 description=description.format(version__, args.prefix, source_url)
              )
 
