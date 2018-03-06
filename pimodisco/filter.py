@@ -38,7 +38,8 @@ class ProfanityFilter(object):
 
 
 def setup_args(parser):
-    parser.add_argument('-m', '--moderation', action='store_true', help='Turn on profanity filter and spam rate limiting.')
+    parser.add_argument('-m', '--moderation', action='store_true', env_var='MODERATION',
+                        help='Turn on profanity filter and spam rate limiting.')
 
 
 def setup(bot, args):
